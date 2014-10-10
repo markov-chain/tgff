@@ -3,6 +3,13 @@
 //! format, which is a format for storing task graphs and accompanying data
 //! used in scheduling and allocation research.
 
-#[test]
-fn it_works() {
+use std::io::{File, IoResult};
+
+pub fn parse(path: Path) -> IoResult<()> {
+    let mut file = match File::open(&path) {
+        Ok(file) => file,
+        Err(err) => return Err(err),
+    };
+
+    Ok(())
 }
