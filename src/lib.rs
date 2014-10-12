@@ -117,7 +117,7 @@ impl<'a> Parser<'a> {
                         let id = some!(self, self.read_id(),
                                        "found a task without an id");
 
-                        some!(self, self.read_str("TYPE"),
+                        some!(self, self.skip_sequence("TYPE"),
                               "found a task without a TYPE");
 
                         let kind = some!(self, self.read_natural(),
@@ -129,19 +129,19 @@ impl<'a> Parser<'a> {
                         let id = some!(self, self.read_id(),
                                        "found an arc without an id");
 
-                        some!(self, self.read_str("FROM"),
+                        some!(self, self.skip_sequence("FROM"),
                               "found an arc without a source");
 
                         let from = some!(self, self.read_id(),
                                          "found an arc source without a value");
 
-                        some!(self, self.read_str("TO"),
+                        some!(self, self.skip_sequence("TO"),
                               "found an arc without a destination");
 
                         let to = some!(self, self.read_id(),
                                        "found an arc destination without a value");
 
-                        some!(self, self.read_str("TYPE"),
+                        some!(self, self.skip_sequence("TYPE"),
                               "found an arc without a type");
 
                         let kind = some!(self, self.read_natural(),
@@ -150,6 +150,22 @@ impl<'a> Parser<'a> {
                         graph.add_arc(Arc::new(id, from, to, kind));
                     },
                     "HARD_DEADLINE" => {
+                        let id = some!(self, self.read_id(),
+                                       "found a deadline without an id");
+
+                        some!(self, self.skip_sequence("ON"),
+                              "found a deadline without a target");
+
+                        let on = some!(self, self.read_id(),
+                                       "found a deadline target without a value");
+
+                        some!(self, self.skip_sequence("AT"),
+                              "found a deadline without a time stamp");
+
+                        let at = some!(self, self.read_natural(),
+                                       "found a deadline time stamp without a value");
+
+                        graph.add_deadline(Deadline::new(id, on, at));
                     },
                     _ => {
                         let value = some!(self, self.read_natural(),
@@ -195,6 +211,13 @@ impl<'a> Parser<'a> {
         self.skip(|_, c| c == ' ' || c == '\t' || c == '\n');
     }
 
+    fn skip_sequence(&mut self, chars: &str) -> Option<()> {
+        let len = chars.len();
+        let count = self.skip(|i, c| i < len && c == chars.char_at(i));
+        self.skip_void();
+        if len == count { Some(()) } else { None }
+    }
+
     fn read(&mut self, accept: |uint, char| -> bool) -> Option<String> {
         let mut result = std::string::String::with_capacity(READ_CAPACITY);
         let mut count = 0;
@@ -233,16 +256,6 @@ impl<'a> Parser<'a> {
     fn read_natural(&mut self) -> Option<uint> {
         let result = match self.read(|_, c| c >= '0' && c <= '9') {
             Some(ref number) => std::num::from_str_radix(number.as_slice(), 10),
-            None => None,
-        };
-        self.skip_void();
-        result
-    }
-
-    fn read_str(&mut self, expected: &str) -> Option<String> {
-        let len = expected.len();
-        let result = match self.read(|i, c| i < len && c == expected.char_at(i)) {
-            Some(found) => if found.len() == len { Some(found) } else { None },
             None => None,
         };
         self.skip_void();
@@ -333,6 +346,15 @@ mod tests {
             assert_eq!(arc.from, 0);
             assert_eq!(arc.to, 1);
             assert_eq!(arc.kind, 35);
+        }
+
+        parser = parser!("HARD_DEADLINE d0_9 ON t0_12 AT 1000   ");
+        parser.process_graph(String::new(), 0);
+        {
+            let ref deadline = parser.content.graphs[0].deadlines[0];
+            assert_eq!(deadline.id, 9);
+            assert_eq!(deadline.on, 12);
+            assert_eq!(deadline.at, 1000);
         }
     }
 

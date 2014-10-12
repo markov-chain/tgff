@@ -92,6 +92,11 @@ impl Graph {
     }
 
     #[inline]
+    pub fn set_attribute(&mut self, name: String, value: uint) {
+        self.attributes.insert(name, value);
+    }
+
+    #[inline]
     pub fn add_task(&mut self, task: Task) {
         self.tasks.push(task);
     }
@@ -102,8 +107,8 @@ impl Graph {
     }
 
     #[inline]
-    pub fn set_attribute(&mut self, name: String, value: uint) {
-        self.attributes.insert(name, value);
+    pub fn add_deadline(&mut self, deadline: Deadline) {
+        self.deadlines.push(deadline);
     }
 }
 
@@ -118,6 +123,13 @@ impl Arc {
     #[inline]
     pub fn new(id: uint, from: uint, to: uint, kind: uint) -> Arc {
         Arc { id: id, from: from, to: to, kind: kind }
+    }
+}
+
+impl Deadline {
+    #[inline]
+    pub fn new(id: uint, on: uint, at: uint) -> Deadline {
+        Deadline { id: id, on: on, at: at }
     }
 }
 
