@@ -63,6 +63,16 @@ impl Content {
     }
 
     #[inline]
+    pub fn add_graph(&mut self, graph: Graph) {
+        self.graphs.push(graph);
+    }
+
+    #[inline]
+    pub fn add_table(&mut self, table: Table) {
+        self.tables.push(table);
+    }
+
+    #[inline]
     pub fn set_attribute(&mut self, name: String, value: uint) {
         self.attributes.insert(name, value);
     }
@@ -82,13 +92,32 @@ impl Graph {
     }
 
     #[inline]
-    pub fn add_task(&mut self, id: uint, kind: uint) {
-        self.tasks.push(Task { id: id, kind: kind });
+    pub fn add_task(&mut self, task: Task) {
+        self.tasks.push(task);
+    }
+
+    #[inline]
+    pub fn add_arc(&mut self, arc: Arc) {
+        self.arcs.push(arc);
     }
 
     #[inline]
     pub fn set_attribute(&mut self, name: String, value: uint) {
         self.attributes.insert(name, value);
+    }
+}
+
+impl Task {
+    #[inline]
+    pub fn new(id: uint, kind: uint) -> Task {
+        Task { id: id, kind: kind }
+    }
+}
+
+impl Arc {
+    #[inline]
+    pub fn new(id: uint, from: uint, to: uint, kind: uint) -> Arc {
+        Arc { id: id, from: from, to: to, kind: kind }
     }
 }
 

@@ -94,11 +94,9 @@ impl<'a> Parser<'a> {
         self.skip_void();
 
         if let Some('#') = self.peek() {
-            let mut table = Table::new(name, id);
-            try!(self.process_table(&mut table));
+            try!(self.process_table(name, id));
         } else {
-            let mut graph = Graph::new(name, id);
-            try!(self.process_graph(&mut graph));
+            try!(self.process_graph(name, id));
         }
 
         if let Some('}') = self.peek() {
@@ -109,7 +107,9 @@ impl<'a> Parser<'a> {
         raise!(self, "cannot find the end of a {}-block");
     }
 
-    fn process_graph(&mut self, graph: &mut Graph) -> Result<()> {
+    fn process_graph(&mut self, name: String, id: uint) -> Result<()> {
+        let mut graph = Graph::new(name, id);
+
         loop {
             match self.read_token() {
                 Some(ref token) => match token.as_slice() {
@@ -118,14 +118,36 @@ impl<'a> Parser<'a> {
                                        "found a task without an id");
 
                         some!(self, self.read_str("TYPE"),
-                              "found a task without a type");
+                              "found a task without a TYPE");
 
                         let kind = some!(self, self.read_natural(),
-                                         "found a task without a type");
+                                         "found a task type without a value");
 
-                        graph.add_task(id, kind);
+                        graph.add_task(Task::new(id, kind));
                     },
                     "ARC" => {
+                        let id = some!(self, self.read_id(),
+                                       "found an arc without an id");
+
+                        some!(self, self.read_str("FROM"),
+                              "found an arc without a source");
+
+                        let from = some!(self, self.read_id(),
+                                         "found an arc source without a value");
+
+                        some!(self, self.read_str("TO"),
+                              "found an arc without a destination");
+
+                        let to = some!(self, self.read_id(),
+                                       "found an arc destination without a value");
+
+                        some!(self, self.read_str("TYPE"),
+                              "found an arc without a type");
+
+                        let kind = some!(self, self.read_natural(),
+                                         "found an arc type without a value");
+
+                        graph.add_arc(Arc::new(id, from, to, kind));
                     },
                     "HARD_DEADLINE" => {
                     },
@@ -140,10 +162,14 @@ impl<'a> Parser<'a> {
             }
         }
 
+        self.content.add_graph(graph);
         Ok(())
     }
 
-    fn process_table(&mut self, table: &mut Table) -> Result<()> {
+    fn process_table(&mut self, name: String, id: uint) -> Result<()> {
+        let mut table = Table::new(name, id);
+
+        self.content.add_table(table);
         Ok(())
     }
 
@@ -277,12 +303,6 @@ mod tests {
         ($input:expr) => (super::Parser::new($input));
     )
 
-    macro_rules! graph(
-        ($name:expr, $id:expr) => (
-            super::Graph::new(String::from_str($name), $id)
-        );
-    )
-
     #[test]
     fn process_at() {
         assert_ok!(parser!("@abc 12").process_at());
@@ -297,13 +317,23 @@ mod tests {
 
     #[test]
     fn process_graph() {
-        let mut graph = graph!("life", 42);
+        let mut parser = parser!("TASK t0_0\tTYPE 2   ");
+        parser.process_graph(String::new(), 0);
+        {
+            let ref task = parser.content.graphs[0].tasks[0];
+            assert_eq!(task.id, 0);
+            assert_eq!(task.kind, 2);
+        }
 
-        assert_ok!(parser!("TASK t0_0\tTYPE 2   ").process_graph(&mut graph));
-
-        assert!(graph.tasks.len() == 1);
-        assert!(graph.tasks[0].id == 0);
-        assert!(graph.tasks[0].kind == 2);
+        parser = parser!("ARC a0_42 \tFROM t0_0  TO  t0_1 TYPE 35   ");
+        parser.process_graph(String::new(), 0);
+        {
+            let ref arc = parser.content.graphs[0].arcs[0];
+            assert_eq!(arc.id, 42);
+            assert_eq!(arc.from, 0);
+            assert_eq!(arc.to, 1);
+            assert_eq!(arc.kind, 35);
+        }
     }
 
     #[test]
