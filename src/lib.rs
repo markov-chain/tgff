@@ -21,7 +21,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 pub struct Error {
     line: uint,
-    message: &'static str,
+    message: String,
 }
 
 impl std::fmt::Show for Error {
@@ -37,16 +37,16 @@ pub struct Parser<'a> {
 }
 
 macro_rules! raise(
-    ($parser:expr, $message:expr) => (
-        return Err(Error { line: $parser.line, message: $message });
+    ($parser:expr, $($arg:tt)*) => (
+        return Err(Error { line: $parser.line, message: format!($($arg)*) });
     );
 )
 
 macro_rules! some(
-    ($parser:expr, $result:expr, $message:expr) => (
+    ($parser:expr, $result:expr, $($arg:tt)*) => (
         match $result {
             Some(result) => result,
-            None => raise!($parser, $message),
+            None => raise!($parser, $($arg)*),
         }
     );
 )
@@ -76,10 +76,8 @@ impl<'a> Parser<'a> {
     fn process_at(&mut self) -> Result<()> {
         self.next(); // @
 
-        let name = some!(self, self.read_token(),
-                         "found an @-statement without a name");
-        let number = some!(self, self.read_natural(),
-                           "found an @-statement not followed by a natural number");
+        let name = try!(self.get_token());
+        let number = try!(self.get_natural());
 
         if let Some('{') = self.peek() {
             self.process_block(name, number)
@@ -104,7 +102,7 @@ impl<'a> Parser<'a> {
             return Ok(());
         }
 
-        raise!(self, "cannot find the end of a {}-block");
+        raise!(self, "cannot find the end of a block");
     }
 
     fn process_graph(&mut self, name: String, id: uint) -> Result<()> {
@@ -114,62 +112,34 @@ impl<'a> Parser<'a> {
             match self.read_token() {
                 Some(ref token) => match token.as_slice() {
                     "TASK" => {
-                        let id = some!(self, self.read_id(),
-                                       "found a task without an id");
-
-                        some!(self, self.skip_sequence("TYPE"),
-                              "found a task without a TYPE");
-
-                        let kind = some!(self, self.read_natural(),
-                                         "found a task type without a value");
+                        let id = try!(self.get_id());
+                        try!(self.skip_str("TYPE"));
+                        let kind = try!(self.get_natural());
 
                         graph.add_task(Task::new(id, kind));
                     },
                     "ARC" => {
-                        let id = some!(self, self.read_id(),
-                                       "found an arc without an id");
-
-                        some!(self, self.skip_sequence("FROM"),
-                              "found an arc without a source");
-
-                        let from = some!(self, self.read_id(),
-                                         "found an arc source without a value");
-
-                        some!(self, self.skip_sequence("TO"),
-                              "found an arc without a destination");
-
-                        let to = some!(self, self.read_id(),
-                                       "found an arc destination without a value");
-
-                        some!(self, self.skip_sequence("TYPE"),
-                              "found an arc without a type");
-
-                        let kind = some!(self, self.read_natural(),
-                                         "found an arc type without a value");
+                        let id = try!(self.get_id());
+                        try!(self.skip_str("FROM"));
+                        let from = try!(self.get_id());
+                        try!(self.skip_str("TO"));
+                        let to = try!(self.get_id());
+                        try!(self.skip_str("TYPE"));
+                        let kind = try!(self.get_natural());
 
                         graph.add_arc(Arc::new(id, from, to, kind));
                     },
                     "HARD_DEADLINE" => {
-                        let id = some!(self, self.read_id(),
-                                       "found a deadline without an id");
-
-                        some!(self, self.skip_sequence("ON"),
-                              "found a deadline without a target");
-
-                        let on = some!(self, self.read_id(),
-                                       "found a deadline target without a value");
-
-                        some!(self, self.skip_sequence("AT"),
-                              "found a deadline without a time stamp");
-
-                        let at = some!(self, self.read_natural(),
-                                       "found a deadline time stamp without a value");
+                        let id = try!(self.get_id());
+                        try!(self.skip_str("ON"));
+                        let on = try!(self.get_id());
+                        try!(self.skip_str("AT"));
+                        let at = try!(self.get_natural());
 
                         graph.add_deadline(Deadline::new(id, on, at));
                     },
                     _ => {
-                        let value = some!(self, self.read_natural(),
-                                          "found an attribute not followed by a natural number");
+                        let value = try!(self.get_natural());
 
                         graph.set_attribute(token.clone(), value);
                     },
@@ -211,11 +181,13 @@ impl<'a> Parser<'a> {
         self.skip(|_, c| c == ' ' || c == '\t' || c == '\n');
     }
 
-    fn skip_sequence(&mut self, chars: &str) -> Option<()> {
+    fn skip_str(&mut self, chars: &str) -> Result<()> {
         let len = chars.len();
-        let count = self.skip(|i, c| i < len && c == chars.char_at(i));
+        if self.skip(|i, c| i < len && c == chars.char_at(i)) != len {
+            raise!(self, "expected `{}`", chars);
+        }
         self.skip_void();
-        if len == count { Some(()) } else { None }
+        Ok(())
     }
 
     fn read(&mut self, accept: |uint, char| -> bool) -> Option<String> {
@@ -269,6 +241,27 @@ impl<'a> Parser<'a> {
                 None => None,
             },
             None => None,
+        }
+    }
+
+    fn get_token(&mut self) -> Result<String> {
+        match self.read_token() {
+            Some(token) => Ok(token),
+            None => raise!(self, "expected a token"),
+        }
+    }
+
+    fn get_natural(&mut self) -> Result<uint> {
+        match self.read_natural() {
+            Some(number) => Ok(number),
+            None => raise!(self, "expected a natural number"),
+        }
+    }
+
+    fn get_id(&mut self) -> Result<uint> {
+        match self.read_id() {
+            Some(id) => Ok(id),
+            None => raise!(self, "expected an id"),
         }
     }
 
@@ -370,10 +363,10 @@ mod tests {
     }
 
     #[test]
-    fn read_token() {
+    fn get_token() {
         macro_rules! test(
             ($input:expr, $output:expr) => (
-                assert_eq!(parser!($input).read_token().unwrap(),
+                assert_eq!(parser!($input).get_token().unwrap(),
                            String::from_str($output));
             );
         )
@@ -384,12 +377,12 @@ mod tests {
     }
 
     #[test]
-    fn read_natural() {
-        assert_eq!(parser!("09").read_natural().unwrap(), 9);
+    fn get_natural() {
+        assert_eq!(parser!("09").get_natural().unwrap(), 9);
     }
 
     #[test]
-    fn read_id() {
-        assert_eq!(parser!("t0_42").read_id().unwrap(), 42);
+    fn get_id() {
+        assert_eq!(parser!("t0_42").get_id().unwrap(), 42);
     }
 }
