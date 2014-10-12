@@ -8,8 +8,8 @@ use std::io::File;
 use tgff::Parser;
 
 macro_rules! assert_ok(
-    ($e: expr) => (
-        if let Err(err) = $e {
+    ($result: expr) => (
+        if let Err(err) = $result {
             assert!(false, "{}", err);
         }
     );
