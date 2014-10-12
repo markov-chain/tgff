@@ -2,57 +2,58 @@ use std::collections::HashMap;
 
 /// The content of a TGFF file.
 pub struct Content {
-    attributes: HashMap<String, String>,
-    graphs: Vec<Graph>,
-    tables: Vec<Table>,
+    pub attributes: HashMap<String, uint>,
+    pub graphs: Vec<Graph>,
+    pub tables: Vec<Table>,
 }
 
 /// A graph.
 pub struct Graph {
-    name: String,
-    id: uint,
-    attributes: HashMap<String, String>,
-    tasks: Vec<Task>,
-    arcs: Vec<Arc>,
-    deadlines: Vec<Deadline>,
+    pub name: String,
+    pub id: uint,
+    pub attributes: HashMap<String, uint>,
+    pub tasks: Vec<Task>,
+    pub arcs: Vec<Arc>,
+    pub deadlines: Vec<Deadline>,
 }
 
 /// A TASK entry of a graph.
 pub struct Task {
-    name: String,
-    kind: uint,
+    pub id: uint,
+    pub kind: uint,
 }
 
 /// An ARC entry of a graph.
 pub struct Arc {
-    name: String,
-    from: uint,
-    to: uint,
-    kind: uint,
+    pub id: uint,
+    pub from: uint,
+    pub to: uint,
+    pub kind: uint,
 }
 
 /// A HARD_DEADLINE entry of a graph.
 pub struct Deadline {
-    name: String,
-    on: uint,
-    at: uint,
+    pub id: uint,
+    pub on: uint,
+    pub at: uint,
 }
 
 /// A table.
 pub struct Table {
-    name: String,
-    id: uint,
-    attributes: HashMap<String, String>,
-    columns: Vec<Column>,
+    pub name: String,
+    pub id: uint,
+    pub attributes: HashMap<String, f64>,
+    pub columns: Vec<Column>,
 }
 
 /// A column of a table.
 pub struct Column {
-    name: String,
-    data: Vec<f64>,
+    pub name: String,
+    pub data: Vec<f64>,
 }
 
 impl Content {
+    #[inline]
     pub fn new() -> Content {
         Content {
             attributes: HashMap::new(),
@@ -61,7 +62,44 @@ impl Content {
         }
     }
 
-    pub fn set_attribute(&mut self, name: String, value: String) {
+    #[inline]
+    pub fn set_attribute(&mut self, name: String, value: uint) {
         self.attributes.insert(name, value);
+    }
+}
+
+impl Graph {
+    #[inline]
+    pub fn new(name: String, id: uint) -> Graph {
+        Graph {
+            name: name,
+            id: id,
+            attributes: HashMap::new(),
+            tasks: Vec::new(),
+            arcs: Vec::new(),
+            deadlines: Vec::new(),
+        }
+    }
+
+    #[inline]
+    pub fn add_task(&mut self, id: uint, kind: uint) {
+        self.tasks.push(Task { id: id, kind: kind });
+    }
+
+    #[inline]
+    pub fn set_attribute(&mut self, name: String, value: uint) {
+        self.attributes.insert(name, value);
+    }
+}
+
+impl Table {
+    #[inline]
+    pub fn new(name: String, id: uint) -> Table {
+        Table {
+            name: name,
+            id: id,
+            attributes: HashMap::new(),
+            columns: Vec::new(),
+        }
     }
 }

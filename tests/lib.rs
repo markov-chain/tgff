@@ -7,7 +7,7 @@ use std::io::fs::PathExtensions;
 use std::io::File;
 use tgff::Parser;
 
-macro_rules! ok(
+macro_rules! assert_ok(
     ($result: expr) => (
         if let Err(err) = $result {
             assert!(false, "{}", err);
@@ -19,7 +19,7 @@ macro_rules! ok(
 fn parser_process() {
     let content = read_fixture("simple.tgff");
     let mut parser = Parser::new(content.as_slice());
-    //ok!(parser.process());
+    //assert_ok!(parser.process());
 }
 
 fn read_fixture(name: &'static str) -> String {
