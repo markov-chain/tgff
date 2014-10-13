@@ -74,7 +74,7 @@ impl<'a> Parser<'a> {
     }
 
     fn process_at(&mut self) -> Result<()> {
-        self.next(); // @
+        try!(self.skip_char('@'));
 
         let name = try!(self.get_token());
         let number = try!(self.get_natural());
@@ -88,8 +88,7 @@ impl<'a> Parser<'a> {
     }
 
     fn process_block(&mut self, name: String, id: uint) -> Result<()> {
-        self.next(); // {
-        self.skip_void();
+        try!(self.skip_char('{'));
 
         if let Some('#') = self.peek() {
             try!(self.process_table(name, id));
@@ -115,7 +114,6 @@ impl<'a> Parser<'a> {
                         let id = try!(self.get_id());
                         try!(self.skip_str("TYPE"));
                         let kind = try!(self.get_natural());
-
                         graph.tasks.push(Task::new(id, kind));
                     },
                     "ARC" => {
@@ -126,7 +124,6 @@ impl<'a> Parser<'a> {
                         let to = try!(self.get_id());
                         try!(self.skip_str("TYPE"));
                         let kind = try!(self.get_natural());
-
                         graph.arcs.push(Arc::new(id, from, to, kind));
                     },
                     "HARD_DEADLINE" => {
@@ -135,12 +132,10 @@ impl<'a> Parser<'a> {
                         let on = try!(self.get_id());
                         try!(self.skip_str("AT"));
                         let at = try!(self.get_natural());
-
                         graph.deadlines.push(Deadline::new(id, on, at));
                     },
                     _ => {
                         let value = try!(self.get_natural());
-
                         graph.attributes.insert(token.clone(), value);
                     },
                 },
@@ -176,18 +171,31 @@ impl<'a> Parser<'a> {
         count
     }
 
-    #[inline]
-    fn skip_void(&mut self) {
-        self.skip(|_, c| c == ' ' || c == '\t' || c == '\n');
+    fn skip_char(&mut self, expected: char) -> Result<()> {
+        match self.next() {
+            Some(c) => {
+                if c == expected {
+                    self.skip_void();
+                    return Ok(());
+                }
+            },
+            None => {},
+        }
+        raise!(self, "expected `{}`", expected);
     }
 
-    fn skip_str(&mut self, chars: &str) -> Result<()> {
-        let len = chars.len();
-        if self.skip(|i, c| i < len && c == chars.char_at(i)) != len {
-            raise!(self, "expected `{}`", chars);
+    fn skip_str(&mut self, expected: &str) -> Result<()> {
+        let len = expected.len();
+        if self.skip(|i, c| i < len && c == expected.char_at(i)) != len {
+            raise!(self, "expected `{}`", expected);
         }
         self.skip_void();
         Ok(())
+    }
+
+    #[inline]
+    fn skip_void(&mut self) {
+        self.skip(|_, c| c == ' ' || c == '\t' || c == '\n');
     }
 
     fn read(&mut self, accept: |uint, char| -> bool) -> Option<String> {
@@ -318,7 +326,7 @@ mod tests {
 
     #[test]
     fn process_block() {
-        assert_ok!(parser!("{}").process_block(String::from_str("life"), 42));
+        assert_ok!(parser!("{}").process_block(String::new(), 0));
     }
 
     #[test]
@@ -353,6 +361,26 @@ mod tests {
 
     #[test]
     fn process_table() {
+        let mut parser = parser!("#        price\n       70.1121");
+        parser.process_table(String::new(), 0);
+        {
+            let ref table = parser.content.tables[0];
+            assert_eq!(table.attributes["price".to_string()], 70.1121);
+        }
+    }
+
+    #[test]
+    fn skip_char() {
+        let mut parser = parser!("#  \t\n  abc");
+        assert_ok!(parser.skip_char('#'));
+        assert_eq!(parser.next().unwrap(), 'a');
+    }
+
+    #[test]
+    fn skip_str() {
+        let mut parser = parser!("abc  \t\n  xyz");
+        assert_ok!(parser.skip_str("abc"));
+        assert_eq!(parser.next().unwrap(), 'x');
     }
 
     #[test]
