@@ -82,7 +82,7 @@ impl<'a> Parser<'a> {
         if let Some('{') = self.peek() {
             self.process_block(name, number)
         } else {
-            self.content.set_attribute(name, number);
+            self.content.attributes.insert(name, number);
             Ok(())
         }
     }
@@ -116,7 +116,7 @@ impl<'a> Parser<'a> {
                         try!(self.skip_str("TYPE"));
                         let kind = try!(self.get_natural());
 
-                        graph.add_task(Task::new(id, kind));
+                        graph.tasks.push(Task::new(id, kind));
                     },
                     "ARC" => {
                         let id = try!(self.get_id());
@@ -127,7 +127,7 @@ impl<'a> Parser<'a> {
                         try!(self.skip_str("TYPE"));
                         let kind = try!(self.get_natural());
 
-                        graph.add_arc(Arc::new(id, from, to, kind));
+                        graph.arcs.push(Arc::new(id, from, to, kind));
                     },
                     "HARD_DEADLINE" => {
                         let id = try!(self.get_id());
@@ -136,26 +136,26 @@ impl<'a> Parser<'a> {
                         try!(self.skip_str("AT"));
                         let at = try!(self.get_natural());
 
-                        graph.add_deadline(Deadline::new(id, on, at));
+                        graph.deadlines.push(Deadline::new(id, on, at));
                     },
                     _ => {
                         let value = try!(self.get_natural());
 
-                        graph.set_attribute(token.clone(), value);
+                        graph.attributes.insert(token.clone(), value);
                     },
                 },
                 None => break,
             }
         }
 
-        self.content.add_graph(graph);
+        self.content.graphs.push(graph);
         Ok(())
     }
 
     fn process_table(&mut self, name: String, id: uint) -> Result<()> {
         let mut table = Table::new(name, id);
 
-        self.content.add_table(table);
+        self.content.tables.push(table);
         Ok(())
     }
 

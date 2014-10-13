@@ -61,21 +61,6 @@ impl Content {
             tables: Vec::new(),
         }
     }
-
-    #[inline]
-    pub fn add_graph(&mut self, graph: Graph) {
-        self.graphs.push(graph);
-    }
-
-    #[inline]
-    pub fn add_table(&mut self, table: Table) {
-        self.tables.push(table);
-    }
-
-    #[inline]
-    pub fn set_attribute(&mut self, name: String, value: uint) {
-        self.attributes.insert(name, value);
-    }
 }
 
 impl Graph {
@@ -89,26 +74,6 @@ impl Graph {
             arcs: Vec::new(),
             deadlines: Vec::new(),
         }
-    }
-
-    #[inline]
-    pub fn set_attribute(&mut self, name: String, value: uint) {
-        self.attributes.insert(name, value);
-    }
-
-    #[inline]
-    pub fn add_task(&mut self, task: Task) {
-        self.tasks.push(task);
-    }
-
-    #[inline]
-    pub fn add_arc(&mut self, arc: Arc) {
-        self.arcs.push(arc);
-    }
-
-    #[inline]
-    pub fn add_deadline(&mut self, deadline: Deadline) {
-        self.deadlines.push(deadline);
     }
 }
 
