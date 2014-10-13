@@ -150,6 +150,19 @@ impl<'a> Parser<'a> {
     fn process_table(&mut self, name: String, id: uint) -> Result<()> {
         let mut table = Table::new(name, id);
 
+        try!(self.skip_char('#'));
+
+        let mut names = vec![];
+        loop {
+            match self.read_token() {
+                Some(token) => names.push(token),
+                None => break,
+            }
+        }
+        for name in names.into_iter() {
+            table.attributes.insert(name, try!(self.get_real()));
+        }
+
         self.content.tables.push(table);
         Ok(())
     }
@@ -242,6 +255,24 @@ impl<'a> Parser<'a> {
         result
     }
 
+    fn read_real(&mut self) -> Option<f64> {
+        let result = match self.read(|_, c| {
+            match c {
+                '+' | '-' | '.' | '0'...'9' | 'e' | 'E' => true,
+                _ => false,
+            }
+        }) {
+            Some(ref number) => {
+                use std::num::strconv;
+                strconv::from_str_common(number.as_slice(), 10, true, true,
+                                         false, strconv::ExpDec, false, false)
+            },
+            None => None,
+        };
+        self.skip_void();
+        result
+    }
+
     fn read_id(&mut self) -> Option<uint> {
         match self.read_token() {
             Some(ref token) => match token.as_slice().split('_').nth(1) {
@@ -263,6 +294,13 @@ impl<'a> Parser<'a> {
         match self.read_natural() {
             Some(number) => Ok(number),
             None => raise!(self, "expected a natural number"),
+        }
+    }
+
+    fn get_real(&mut self) -> Result<f64> {
+        match self.read_real() {
+            Some(number) => Ok(number),
+            None => raise!(self, "expected a real number"),
         }
     }
 
@@ -395,7 +433,7 @@ mod tests {
         macro_rules! test(
             ($input:expr, $output:expr) => (
                 assert_eq!(parser!($input).get_token().unwrap(),
-                           String::from_str($output));
+                           String::from_str($output))
             );
         )
 
@@ -407,6 +445,21 @@ mod tests {
     #[test]
     fn get_natural() {
         assert_eq!(parser!("09").get_natural().unwrap(), 9);
+    }
+
+    #[test]
+    fn get_real() {
+        macro_rules! test(
+            ($input:expr, $output:expr) => (
+                assert_eq!(parser!($input).get_real().unwrap(), $output)
+            );
+        )
+
+        test!("-1", -1.0);
+        test!("0.1", 0.1);
+        test!("1.2e3", 1.2e3);
+        test!("1.2e+3", 1.2e3);
+        test!("-1.2e-3", -1.2e-3);
     }
 
     #[test]
