@@ -167,6 +167,14 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
+    #[inline]
+    fn peek(&mut self) -> Option<char> {
+        match self.cursor.peek() {
+            Some(&(_, c)) => Some(c),
+            None => None,
+        }
+    }
+
     fn skip(&mut self, accept: |uint, char| -> bool) -> uint {
         let mut count = 0;
 
@@ -246,6 +254,16 @@ impl<'a> Parser<'a> {
         result
     }
 
+    fn read_id(&mut self) -> Option<uint> {
+        match self.read_token() {
+            Some(ref token) => match token.as_slice().split('_').nth(1) {
+                Some(id) => std::num::from_str_radix(id, 10),
+                None => None,
+            },
+            None => None,
+        }
+    }
+
     fn read_natural(&mut self) -> Option<uint> {
         let result = match self.read(|_, c| c >= '0' && c <= '9') {
             Some(ref number) => std::num::from_str_radix(number.as_slice(), 10),
@@ -273,20 +291,17 @@ impl<'a> Parser<'a> {
         result
     }
 
-    fn read_id(&mut self) -> Option<uint> {
-        match self.read_token() {
-            Some(ref token) => match token.as_slice().split('_').nth(1) {
-                Some(id) => std::num::from_str_radix(id, 10),
-                None => None,
-            },
-            None => None,
-        }
-    }
-
     fn get_token(&mut self) -> Result<String> {
         match self.read_token() {
             Some(token) => Ok(token),
             None => raise!(self, "expected a token"),
+        }
+    }
+
+    fn get_id(&mut self) -> Result<uint> {
+        match self.read_id() {
+            Some(id) => Ok(id),
+            None => raise!(self, "expected an id"),
         }
     }
 
@@ -301,21 +316,6 @@ impl<'a> Parser<'a> {
         match self.read_real() {
             Some(number) => Ok(number),
             None => raise!(self, "expected a real number"),
-        }
-    }
-
-    fn get_id(&mut self) -> Result<uint> {
-        match self.read_id() {
-            Some(id) => Ok(id),
-            None => raise!(self, "expected an id"),
-        }
-    }
-
-    #[inline]
-    fn peek(&mut self) -> Option<char> {
-        match self.cursor.peek() {
-            Some(&(_, c)) => Some(c),
-            None => None,
         }
     }
 }
@@ -443,6 +443,11 @@ mod tests {
     }
 
     #[test]
+    fn get_id() {
+        assert_eq!(parser!("t0_42").get_id().unwrap(), 42);
+    }
+
+    #[test]
     fn get_natural() {
         assert_eq!(parser!("09").get_natural().unwrap(), 9);
     }
@@ -460,10 +465,5 @@ mod tests {
         test!("1.2e3", 1.2e3);
         test!("1.2e+3", 1.2e3);
         test!("-1.2e-3", -1.2e-3);
-    }
-
-    #[test]
-    fn get_id() {
-        assert_eq!(parser!("t0_42").get_id().unwrap(), 42);
     }
 }
