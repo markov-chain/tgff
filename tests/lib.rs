@@ -26,7 +26,7 @@ macro_rules! assert_close(
 )
 
 #[test]
-fn parser_process() {
+fn parser_process_simple() {
     let content = read_fixture("simple.tgff");
     let mut parser = Parser::new(content.as_slice());
     let r = parser.process().unwrap();
@@ -75,6 +75,27 @@ fn parser_process() {
 
     for i in range(0u, data.len()) {
         assert_close!(r.tables[1].columns[1].data[i], data[i]);
+    }
+}
+
+#[test]
+fn parser_process_complex() {
+    let content = read_fixture("032_640.tgff");
+    let mut parser = Parser::new(content.as_slice());
+    let r = parser.process().unwrap();
+
+    assert_eq!(r.graphs.len(), 1);
+    assert_eq!(r.graphs[0].tasks.len(), 640);
+    assert_eq!(r.graphs[0].arcs.len(), 848);
+    assert_eq!(r.graphs[0].deadlines.len(), 259);
+
+    assert_eq!(r.tables.len(), 32);
+    for table in r.tables.iter() {
+        assert_eq!(table.attributes.len(), 1);
+        assert_eq!(table.columns.len(), 4);
+        for column in table.columns.iter() {
+            assert_eq!(column.data.len(), 320);
+        }
     }
 }
 
