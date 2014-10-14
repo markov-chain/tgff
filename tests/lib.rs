@@ -79,7 +79,7 @@ fn parser_process_simple() {
 }
 
 #[test]
-fn parser_process_complex() {
+fn parser_process_032_640() {
     let content = read_fixture("032_640.tgff");
     let mut parser = Parser::new(content.as_slice());
     let r = parser.process().unwrap();
