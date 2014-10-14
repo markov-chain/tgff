@@ -109,3 +109,10 @@ impl Table {
         }
     }
 }
+
+impl Column {
+    #[inline]
+    pub fn new(name: String) -> Column {
+        Column { name: name, data: vec![] }
+    }
+}

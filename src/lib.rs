@@ -5,7 +5,6 @@
 
 #![feature(macro_rules, if_let)]
 
-use std::collections::HashMap;
 use std::iter::Peekable;
 use std::str::CharOffsets;
 
@@ -89,19 +88,13 @@ impl<'a> Parser<'a> {
 
     fn process_block(&mut self, name: String, id: uint) -> Result<()> {
         try!(self.skip_char('{'));
-
         if let Some('#') = self.peek() {
             try!(self.process_table(name, id));
         } else {
             try!(self.process_graph(name, id));
         }
-
-        if let Some('}') = self.peek() {
-            self.next();
-            return Ok(());
-        }
-
-        raise!(self, "cannot find the end of a block");
+        try!(self.skip_char('}'));
+        Ok(())
     }
 
     fn process_graph(&mut self, name: String, id: uint) -> Result<()> {
@@ -163,6 +156,26 @@ impl<'a> Parser<'a> {
             table.attributes.insert(name, try!(self.get_real()));
         }
 
+        try!(self.skip_comment());
+        try!(self.skip_char('#'));
+
+        loop {
+            match self.read_token() {
+                Some(name) => table.columns.push(Column::new(name)),
+                None => break,
+            }
+        }
+        let cols = table.columns.len();
+        loop {
+            match self.peek() {
+                Some('}') | None => break,
+                _ => {},
+            }
+            for i in range(0u, cols) {
+                table.columns.get_mut(i).data.push(try!(self.get_real()));
+            }
+        }
+
         self.content.tables.push(table);
         Ok(())
     }
@@ -217,6 +230,14 @@ impl<'a> Parser<'a> {
     #[inline]
     fn skip_void(&mut self) {
         self.skip(|_, c| c == ' ' || c == '\t' || c == '\n');
+    }
+
+    fn skip_comment(&mut self) -> Result<()> {
+        if self.skip(|i, c| i == 0 && c == '#' || (i > 0) && c == '-') < 2 {
+            raise!(self, "expected a comment line");
+        }
+        self.skip_void();
+        Ok(())
     }
 
     fn read(&mut self, accept: |uint, char| -> bool) -> Option<String> {
@@ -370,7 +391,7 @@ mod tests {
     #[test]
     fn process_graph() {
         let mut parser = parser!("TASK t0_0\tTYPE 2   ");
-        parser.process_graph(String::new(), 0);
+        assert_ok!(parser.process_graph(String::new(), 0));
         {
             let ref task = parser.content.graphs[0].tasks[0];
             assert_eq!(task.id, 0);
@@ -378,7 +399,7 @@ mod tests {
         }
 
         parser = parser!("ARC a0_42 \tFROM t0_0  TO  t0_1 TYPE 35   ");
-        parser.process_graph(String::new(), 0);
+        assert_ok!(parser.process_graph(String::new(), 0));
         {
             let ref arc = parser.content.graphs[0].arcs[0];
             assert_eq!(arc.id, 42);
@@ -388,7 +409,7 @@ mod tests {
         }
 
         parser = parser!("HARD_DEADLINE d0_9 ON t0_12 AT 1000   ");
-        parser.process_graph(String::new(), 0);
+        assert_ok!(parser.process_graph(String::new(), 0));
         {
             let ref deadline = parser.content.graphs[0].deadlines[0];
             assert_eq!(deadline.id, 9);
@@ -399,12 +420,14 @@ mod tests {
 
     #[test]
     fn process_table() {
-        let mut parser = parser!("#        price\n       70.1121");
-        parser.process_table(String::new(), 0);
-        {
-            let ref table = parser.content.tables[0];
-            assert_eq!(table.attributes["price".to_string()], 70.1121);
-        }
+        let mut parser = parser!("# foo\n 70.07\n#--\n# bar baz\n1 2 3 4 ");
+        assert_ok!(parser.process_table(String::new(), 0));
+        let ref table = parser.content.tables[0];
+        assert_eq!(table.attributes["foo".to_string()], 70.07);
+        assert_eq!(table.columns[0].name, "bar".to_string());
+        assert_eq!(table.columns[1].name, "baz".to_string());
+        assert_eq!(table.columns[0].data, vec![1.0, 3.0]);
+        assert_eq!(table.columns[1].data, vec![2.0, 4.0]);
     }
 
     #[test]
@@ -429,6 +452,13 @@ mod tests {
     }
 
     #[test]
+    fn skip_comment() {
+        let mut parser = parser!("#--------------   \n abc");
+        assert_ok!(parser.skip_comment());
+        assert_eq!(parser.next().unwrap(), 'a');
+    }
+
+    #[test]
     fn get_token() {
         macro_rules! test(
             ($input:expr, $output:expr) => (
@@ -436,7 +466,6 @@ mod tests {
                            String::from_str($output))
             );
         )
-
         test!("AZ xyz", "AZ");
         test!("az xyz", "az");
         test!("AZ_az_09 xyz", "AZ_az_09");
@@ -459,7 +488,6 @@ mod tests {
                 assert_eq!(parser!($input).get_real().unwrap(), $output)
             );
         )
-
         test!("-1", -1.0);
         test!("0.1", 0.1);
         test!("1.2e3", 1.2e3);
