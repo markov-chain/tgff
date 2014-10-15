@@ -21,7 +21,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 /// A parsing error.
 pub struct Error {
+    /// The line on which the error occurred.
     pub line: uint,
+    /// The description of the error.
     pub message: String,
 }
 
