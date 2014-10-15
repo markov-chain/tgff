@@ -57,7 +57,7 @@ impl<'a> Parser<'a> {
         Parser {
             line: 1,
             cursor: input.char_indices().peekable(),
-            content: Content::new(),
+            content: content::new(),
         }
     }
 
@@ -98,7 +98,7 @@ impl<'a> Parser<'a> {
     }
 
     fn process_graph(&mut self, name: String, id: uint) -> Result<()> {
-        let mut graph = Graph::new(name, id);
+        let mut graph = content::new_graph(name, id);
 
         loop {
             match self.read_token() {
@@ -107,7 +107,7 @@ impl<'a> Parser<'a> {
                         let id = try!(self.get_id());
                         try!(self.skip_str("TYPE"));
                         let kind = try!(self.get_natural());
-                        graph.tasks.push(Task::new(id, kind));
+                        graph.tasks.push(content::new_task(id, kind));
                     },
                     "ARC" => {
                         let id = try!(self.get_id());
@@ -117,7 +117,7 @@ impl<'a> Parser<'a> {
                         let to = try!(self.get_id());
                         try!(self.skip_str("TYPE"));
                         let kind = try!(self.get_natural());
-                        graph.arcs.push(Arc::new(id, from, to, kind));
+                        graph.arcs.push(content::new_arc(id, from, to, kind));
                     },
                     "HARD_DEADLINE" => {
                         let id = try!(self.get_id());
@@ -125,7 +125,7 @@ impl<'a> Parser<'a> {
                         let on = try!(self.get_id());
                         try!(self.skip_str("AT"));
                         let at = try!(self.get_natural());
-                        graph.deadlines.push(Deadline::new(id, on, at));
+                        graph.deadlines.push(content::new_deadline(id, on, at));
                     },
                     _ => {
                         let value = try!(self.get_natural());
@@ -141,7 +141,7 @@ impl<'a> Parser<'a> {
     }
 
     fn process_table(&mut self, name: String, id: uint) -> Result<()> {
-        let mut table = Table::new(name, id);
+        let mut table = content::new_table(name, id);
 
         try!(self.skip_char('#'));
 
@@ -161,7 +161,7 @@ impl<'a> Parser<'a> {
 
         loop {
             match self.read_token() {
-                Some(name) => table.columns.push(Column::new(name)),
+                Some(name) => table.columns.push(content::new_column(name)),
                 None => break,
             }
         }
