@@ -5,7 +5,6 @@ extern crate test;
 
 use std::io::fs::PathExtensions;
 use std::io::File;
-use tgff::Parser;
 
 macro_rules! assert_ok(
     ($result: expr) => (
@@ -27,9 +26,7 @@ macro_rules! assert_close(
 
 #[test]
 fn parser_process_simple() {
-    let content = read_fixture("simple.tgff");
-    let mut parser = Parser::new(content.as_slice());
-    let r = parser.process().unwrap();
+    let r = tgff::parse(read_fixture("simple.tgff").as_slice()).unwrap();
 
     assert_eq!(r.attributes["HYPERPERIOD".to_string()], 1180);
     assert_eq!(r.graphs.len(), 5);
@@ -80,9 +77,7 @@ fn parser_process_simple() {
 
 #[test]
 fn parser_process_032_640() {
-    let content = read_fixture("032_640.tgff");
-    let mut parser = Parser::new(content.as_slice());
-    let r = parser.process().unwrap();
+    let r = tgff::parse(read_fixture("032_640.tgff").as_slice()).unwrap();
 
     assert_eq!(r.graphs.len(), 1);
     assert_eq!(r.graphs[0].tasks.len(), 640);

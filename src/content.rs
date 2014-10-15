@@ -7,7 +7,7 @@ pub struct Content {
     pub tables: Vec<Table>,
 }
 
-/// A graph.
+/// A task graph.
 pub struct Graph {
     pub name: String,
     pub id: uint,
@@ -17,13 +17,13 @@ pub struct Graph {
     pub deadlines: Vec<Deadline>,
 }
 
-/// A TASK entry of a graph.
+/// A node in a graph representing a task.
 pub struct Task {
     pub id: uint,
     pub kind: uint,
 }
 
-/// An ARC entry of a graph.
+/// An edge in a graph connecting two tasks.
 pub struct Arc {
     pub id: uint,
     pub from: uint,
@@ -31,14 +31,14 @@ pub struct Arc {
     pub kind: uint,
 }
 
-/// A HARD_DEADLINE entry of a graph.
+/// The deadline of a task.
 pub struct Deadline {
     pub id: uint,
     pub on: uint,
     pub at: uint,
 }
 
-/// A table.
+/// A data table.
 pub struct Table {
     pub name: String,
     pub id: uint,
