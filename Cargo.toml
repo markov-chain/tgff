@@ -2,3 +2,7 @@
 name = "tgff"
 version = "0.0.1"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
+
+[lib]
+name = "tgff"
+doctest = false
