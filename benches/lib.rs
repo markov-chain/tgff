@@ -1,11 +1,12 @@
-extern crate tgff;
 extern crate test;
+
+extern crate tgff;
 
 use std::io::fs::PathExtensions;
 use std::io::File;
 
 #[bench]
-fn parser_process_simple(b: &mut test::Bencher) {
+fn parse_simple(b: &mut test::Bencher) {
     let content = read_fixture("simple.tgff");
 
     b.iter(|| {
@@ -14,7 +15,7 @@ fn parser_process_simple(b: &mut test::Bencher) {
 }
 
 #[bench]
-fn parser_process_032_640(b: &mut test::Bencher) {
+fn parse_032_640(b: &mut test::Bencher) {
     let content = read_fixture("032_640.tgff");
 
     b.iter(|| {

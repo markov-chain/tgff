@@ -9,7 +9,7 @@ use std::io::fs::PathExtensions;
 use std::io::File;
 
 #[test]
-fn parser_process_simple() {
+fn parse_simple() {
     let r = tgff::parse(read_fixture("simple.tgff").as_slice()).unwrap();
 
     assert_eq!(r.attributes["HYPERPERIOD".to_string()], 1180);
@@ -55,7 +55,7 @@ fn parser_process_simple() {
 }
 
 #[test]
-fn parser_process_032_640() {
+fn parse_032_640() {
     let r = tgff::parse(read_fixture("032_640.tgff").as_slice()).unwrap();
 
     assert_eq!(r.graphs.len(), 1);
