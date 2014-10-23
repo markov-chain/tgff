@@ -75,7 +75,7 @@ fn parser_process_032_640() {
 }
 
 fn read_fixture(name: &'static str) -> String {
-    let path = Path::new("tests").join_many(["fixtures", name]);
+    let path = Path::new("fixtures").join(name);
     assert!(path.exists());
     File::open(&path).read_to_string().unwrap()
 }
