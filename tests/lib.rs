@@ -1,28 +1,12 @@
-#![feature(macro_rules)]
+#![feature(phase)]
+
+#[phase(plugin)] extern crate assert;
+extern crate test;
 
 extern crate tgff;
-extern crate test;
 
 use std::io::fs::PathExtensions;
 use std::io::File;
-
-macro_rules! assert_ok(
-    ($result: expr) => (
-        if let Err(err) = $result {
-            assert!(false, "{}", err);
-        }
-    );
-)
-
-macro_rules! assert_within(
-    ($one:expr, $two:expr, $delta:expr) => (
-        assert!(std::num::abs($one - $two) < $delta)
-    );
-)
-
-macro_rules! assert_close(
-    ($one:expr, $two:expr) => (assert_within!($one, $two, 1e-8));
-)
 
 #[test]
 fn parser_process_simple() {
@@ -51,7 +35,7 @@ fn parser_process_simple() {
     for i in range(0u, 3) {
         assert_eq!(r.tables[i].name, "COMMUN".to_string());
         assert_eq!(r.tables[i].id, i);
-        assert_close!(r.tables[i].attributes["price".to_string()], prices[i]);
+        assert_eq!(r.tables[i].attributes["price".to_string()] as f32, prices[i]);
         assert_eq!(r.tables[i].columns.len(), 2);
         assert_eq!(r.tables[i].columns[0].name, "type".to_string());
         assert_eq!(r.tables[i].columns[1].name, "exec_time".to_string());
@@ -68,9 +52,7 @@ fn parser_process_simple() {
                     41.8399, 30.1513, 31.7449, 57.3263, 61.2321,
                     44.9932, 32.0830, 37.9489, 62.4774, 39.2500];
 
-    for i in range(0u, data.len()) {
-        assert_close!(r.tables[1].columns[1].data[i], data[i]);
-    }
+    assert_close!(r.tables[1].columns[1].data, data);
 }
 
 #[test]
