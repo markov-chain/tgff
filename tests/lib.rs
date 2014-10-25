@@ -70,7 +70,7 @@ fn parse_032_640() {
     }
 }
 
-fn read_fixture(name: &'static str) -> String {
+fn read_fixture(name: &str) -> String {
     use std::io::fs::PathExtensions;
     let path = Path::new("fixtures").join(name);
     assert!(path.exists());
