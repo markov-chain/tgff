@@ -1,0 +1,182 @@
+@HYPERPERIOD 8
+
+@GRAPH 0 {
+	PERIOD 8
+
+	TASK t0_0	TYPE 15 
+	TASK t0_1	TYPE 17 
+	TASK t0_2	TYPE 3 
+	TASK t0_3	TYPE 6 
+	TASK t0_4	TYPE 10 
+	TASK t0_5	TYPE 12 
+	TASK t0_6	TYPE 9 
+	TASK t0_7	TYPE 6 
+	TASK t0_8	TYPE 15 
+	TASK t0_9	TYPE 9 
+	TASK t0_10	TYPE 18 
+	TASK t0_11	TYPE 12 
+	TASK t0_12	TYPE 16 
+	TASK t0_13	TYPE 0 
+	TASK t0_14	TYPE 16 
+	TASK t0_15	TYPE 19 
+	TASK t0_16	TYPE 19 
+	TASK t0_17	TYPE 11 
+	TASK t0_18	TYPE 10 
+	TASK t0_19	TYPE 8 
+	TASK t0_20	TYPE 14 
+	TASK t0_21	TYPE 8 
+	TASK t0_22	TYPE 15 
+	TASK t0_23	TYPE 4 
+	TASK t0_24	TYPE 8 
+	TASK t0_25	TYPE 9 
+	TASK t0_26	TYPE 10 
+	TASK t0_27	TYPE 11 
+	TASK t0_28	TYPE 7 
+	TASK t0_29	TYPE 14 
+	TASK t0_30	TYPE 4 
+	TASK t0_31	TYPE 12 
+	TASK t0_32	TYPE 0 
+	TASK t0_33	TYPE 4 
+	TASK t0_34	TYPE 10 
+	TASK t0_35	TYPE 10 
+	TASK t0_36	TYPE 16 
+	TASK t0_37	TYPE 17 
+	TASK t0_38	TYPE 17 
+	TASK t0_39	TYPE 6 
+
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 12
+	ARC a0_1 	FROM t0_0  TO  t0_2 TYPE 14
+	ARC a0_2 	FROM t0_0  TO  t0_3 TYPE 25
+	ARC a0_3 	FROM t0_1  TO  t0_4 TYPE 9
+	ARC a0_4 	FROM t0_1  TO  t0_5 TYPE 14
+	ARC a0_5 	FROM t0_1  TO  t0_6 TYPE 9
+	ARC a0_6 	FROM t0_1  TO  t0_7 TYPE 41
+	ARC a0_7 	FROM t0_7  TO  t0_8 TYPE 34
+	ARC a0_8 	FROM t0_5  TO  t0_9 TYPE 17
+	ARC a0_9 	FROM t0_6  TO  t0_9 TYPE 5
+	ARC a0_10 	FROM t0_4  TO  t0_9 TYPE 43
+	ARC a0_11 	FROM t0_8  TO  t0_10 TYPE 49
+	ARC a0_12 	FROM t0_2  TO  t0_11 TYPE 18
+	ARC a0_13 	FROM t0_2  TO  t0_12 TYPE 0
+	ARC a0_14 	FROM t0_12  TO  t0_13 TYPE 23
+	ARC a0_15 	FROM t0_9  TO  t0_14 TYPE 19
+	ARC a0_16 	FROM t0_9  TO  t0_15 TYPE 10
+	ARC a0_17 	FROM t0_9  TO  t0_16 TYPE 12
+	ARC a0_18 	FROM t0_0  TO  t0_17 TYPE 25
+	ARC a0_19 	FROM t0_13  TO  t0_17 TYPE 26
+	ARC a0_20 	FROM t0_15  TO  t0_18 TYPE 40
+	ARC a0_21 	FROM t0_17  TO  t0_19 TYPE 19
+	ARC a0_22 	FROM t0_17  TO  t0_20 TYPE 1
+	ARC a0_23 	FROM t0_20  TO  t0_21 TYPE 16
+	ARC a0_24 	FROM t0_2  TO  t0_21 TYPE 49
+	ARC a0_25 	FROM t0_15  TO  t0_21 TYPE 26
+	ARC a0_26 	FROM t0_9  TO  t0_22 TYPE 38
+	ARC a0_27 	FROM t0_5  TO  t0_22 TYPE 38
+	ARC a0_28 	FROM t0_20  TO  t0_23 TYPE 33
+	ARC a0_29 	FROM t0_18  TO  t0_23 TYPE 39
+	ARC a0_30 	FROM t0_13  TO  t0_24 TYPE 14
+	ARC a0_31 	FROM t0_16  TO  t0_25 TYPE 40
+	ARC a0_32 	FROM t0_4  TO  t0_25 TYPE 46
+	ARC a0_33 	FROM t0_21  TO  t0_26 TYPE 24
+	ARC a0_34 	FROM t0_13  TO  t0_26 TYPE 6
+	ARC a0_35 	FROM t0_14  TO  t0_27 TYPE 22
+	ARC a0_36 	FROM t0_14  TO  t0_28 TYPE 29
+	ARC a0_37 	FROM t0_12  TO  t0_29 TYPE 10
+	ARC a0_38 	FROM t0_2  TO  t0_30 TYPE 27
+	ARC a0_39 	FROM t0_29  TO  t0_31 TYPE 43
+	ARC a0_40 	FROM t0_29  TO  t0_32 TYPE 22
+	ARC a0_41 	FROM t0_29  TO  t0_33 TYPE 48
+	ARC a0_42 	FROM t0_17  TO  t0_34 TYPE 39
+	ARC a0_43 	FROM t0_15  TO  t0_34 TYPE 27
+	ARC a0_44 	FROM t0_8  TO  t0_34 TYPE 25
+	ARC a0_45 	FROM t0_3  TO  t0_35 TYPE 0
+	ARC a0_46 	FROM t0_27  TO  t0_35 TYPE 48
+	ARC a0_47 	FROM t0_15  TO  t0_35 TYPE 40
+	ARC a0_48 	FROM t0_35  TO  t0_36 TYPE 33
+	ARC a0_49 	FROM t0_35  TO  t0_37 TYPE 40
+	ARC a0_50 	FROM t0_35  TO  t0_38 TYPE 42
+	ARC a0_51 	FROM t0_35  TO  t0_39 TYPE 38
+
+	HARD_DEADLINE d0_0 ON t0_10 AT 5
+	HARD_DEADLINE d0_1 ON t0_11 AT 3
+	HARD_DEADLINE d0_2 ON t0_19 AT 6
+	HARD_DEADLINE d0_3 ON t0_22 AT 5
+	HARD_DEADLINE d0_4 ON t0_23 AT 7
+	HARD_DEADLINE d0_5 ON t0_24 AT 5
+	HARD_DEADLINE d0_6 ON t0_25 AT 6
+	HARD_DEADLINE d0_7 ON t0_26 AT 8
+	HARD_DEADLINE d0_8 ON t0_28 AT 6
+	HARD_DEADLINE d0_9 ON t0_30 AT 3
+	HARD_DEADLINE d0_10 ON t0_31 AT 5
+	HARD_DEADLINE d0_11 ON t0_32 AT 5
+	HARD_DEADLINE d0_12 ON t0_33 AT 5
+	HARD_DEADLINE d0_13 ON t0_34 AT 6
+	HARD_DEADLINE d0_14 ON t0_36 AT 8
+	HARD_DEADLINE d0_15 ON t0_37 AT 8
+	HARD_DEADLINE d0_16 ON t0_38 AT 8
+	HARD_DEADLINE d0_17 ON t0_39 AT 8
+}
+
+
+
+
+@CORE 0 {
+# price
+  10.5042
+
+#------------------------------------------------------------------------------
+# type version dynamic_power   execution_time
+  0    0       14.41           0.025
+  1    0       9.38            0.019
+  2    0       14.19           0.025
+  3    0       15.48           0.026
+  4    0       12.15           0.022
+  5    0       16.57           0.027
+  6    0       16.98           0.028
+  7    0       11.02           0.021
+  8    0       17.6            0.028
+  9    0       5.42            0.015
+  10   0       13.95           0.024
+  11   0       7.08            0.017
+  12   0       5.66            0.015
+  13   0       18.08           0.029
+  14   0       16.51           0.027
+  15   0       5.86            0.015
+  16   0       9.31            0.019
+  17   0       17.25           0.028
+  18   0       8.48            0.018
+  19   0       7.29            0.017
+}
+
+
+@CORE 1 {
+# price
+  14.8562
+
+#------------------------------------------------------------------------------
+# type version dynamic_power   execution_time
+  0    0       17.39           0.028
+  1    0       14.02           0.024
+  2    0       17.26           0.028
+  3    0       18              0.029
+  4    0       15.96           0.027
+  5    0       18.53           0.029
+  6    0       18.7            0.03
+  7    0       15.2            0.026
+  8    0       18.9            0.03
+  9    0       9.85            0.02
+  10   0       17.11           0.028
+  11   0       11.93           0.022
+  12   0       10.19           0.02
+  13   0       18.99           0.03
+  14   0       18.5            0.029
+  15   0       10.47           0.021
+  16   0       13.97           0.024
+  17   0       18.8            0.03
+  18   0       13.28           0.024
+  19   0       12.14           0.022
+}
+
+
+
+
