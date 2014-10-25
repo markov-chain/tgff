@@ -2,9 +2,6 @@ extern crate test;
 
 extern crate tgff;
 
-use std::io::fs::PathExtensions;
-use std::io::File;
-
 #[bench]
 fn parse_simple(b: &mut test::Bencher) {
     let content = read_fixture("simple.tgff");
@@ -24,7 +21,8 @@ fn parse_032_640(b: &mut test::Bencher) {
 }
 
 fn read_fixture(name: &'static str) -> String {
+    use std::io::fs::PathExtensions;
     let path = Path::new("fixtures").join(name);
     assert!(path.exists());
-    File::open(&path).read_to_string().unwrap()
+    std::io::File::open(&path).read_to_string().unwrap()
 }
