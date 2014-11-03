@@ -181,7 +181,7 @@ impl<'a> Parser<'a> {
                 _ => {},
             }
             for i in range(0u, cols) {
-                table.columns.get_mut(i).data.push(try!(self.get_real()));
+                table.columns[i].data.push(try!(self.get_real()));
             }
         }
 
