@@ -12,5 +12,5 @@ scheduling and allocation research.
 
 [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
-[travis-svg]: https://travis-ci.org/rs-eslab/tgff.svg?branch=master
-[travis-url]: https://travis-ci.org/rs-eslab/tgff
+[travis-svg]: https://travis-ci.org/stainless-steel/tgff.svg?branch=master
+[travis-url]: https://travis-ci.org/stainless-steel/tgff
