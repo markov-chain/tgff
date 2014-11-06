@@ -310,11 +310,7 @@ impl<'a> Parser<'a> {
                 _ => false,
             }
         }) {
-            Some(ref number) => {
-                use std::num::strconv;
-                strconv::from_str_common(number.as_slice(), 10, true, true,
-                                         false, strconv::ExpDec, false, false)
-            },
+            Some(ref number) => from_str(number.as_slice()),
             None => None,
         };
         self.skip_void();
