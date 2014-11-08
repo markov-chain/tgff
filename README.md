@@ -4,6 +4,8 @@ The library provides a parser for the [TGFF][1] (Task Graphs For Free) format,
 which is a format for storing task graphs and accompanying data used in
 scheduling and allocation research.
 
+## [Documentation][docs]
+
 ## Contributing
 
 1. Fork the project.
@@ -14,3 +16,4 @@ scheduling and allocation research.
 
 [travis-svg]: https://travis-ci.org/stainless-steel/tgff.svg?branch=master
 [travis-url]: https://travis-ci.org/stainless-steel/tgff
+[docs]: https://stainless-steel.github.io/tgff
