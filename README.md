@@ -9,7 +9,7 @@ scheduling and allocation research.
 ## Contributing
 
 1. Fork the project.
-2. Implement your feature.
+2. Implement your idea.
 3. Create a pull request.
 
 [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
