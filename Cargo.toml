@@ -2,6 +2,11 @@
 name = "tgff"
 version = "0.0.1"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/stainless-steel/tgff"
+homepage = "https://github.com/stainless-steel/tgff"
+documentation = "https://stainless-steel.github.io/tgff"
+description = "The library provides a parser for the TGFF (Task Graphs For Free) format."
 
-[dev-dependencies.assert]
-git = "https://github.com/stainless-steel/assert"
+[dev-dependencies]
+assert = "0.0.1"
