@@ -2,7 +2,7 @@
 //!
 //! [1]: http://www.netlib.org/lapack/explore-html/d7/d2b/dgemm_8f.html
 
-#![feature(macro_rules, if_let)]
+#![feature(macro_rules)]
 
 use std::iter::Peekable;
 use std::str::CharOffsets;
