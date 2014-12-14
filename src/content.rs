@@ -1,3 +1,5 @@
+#![allow(missing_copy_implementations)]
+
 use std::collections::HashMap;
 
 /// The content of a TGFF file.
