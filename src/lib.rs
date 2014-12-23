@@ -44,7 +44,7 @@ macro_rules! raise(
     ($parser:expr, $($arg:tt)*) => (
         return Err(Error { line: $parser.line, message: format!($($arg)*) });
     );
-)
+);
 
 macro_rules! some(
     ($parser:expr, $result:expr, $($arg:tt)*) => (
@@ -53,7 +53,7 @@ macro_rules! some(
             None => raise!($parser, $($arg)*),
         }
     );
-)
+);
 
 impl std::fmt::Show for Error {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -70,7 +70,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn process<'a>(&'a mut self) -> Result<Content> {
+    fn process(&mut self) -> Result<Content> {
         loop {
             match self.peek() {
                 Some('@') => try!(self.process_at()),
@@ -367,7 +367,7 @@ mod tests {
                 assert!(false, "{}", err);
             }
         );
-    )
+    );
 
     macro_rules! assert_error(
         ($result: expr) => (
@@ -375,11 +375,11 @@ mod tests {
                 assert!(false, "expected an error");
             }
         );
-    )
+    );
 
     macro_rules! parser(
         ($input:expr) => (super::Parser::new($input));
-    )
+    );
 
     #[test]
     fn process_at() {
@@ -470,7 +470,7 @@ mod tests {
                 assert_eq!(parser!($input).get_token().unwrap(),
                            String::from_str($output))
             );
-        )
+        );
         test!("AZ xyz", "AZ");
         test!("az xyz", "az");
         test!("AZ_az_09 xyz", "AZ_az_09");
@@ -492,7 +492,7 @@ mod tests {
             ($input:expr, $output:expr) => (
                 assert_eq!(parser!($input).get_real().unwrap(), $output)
             );
-        )
+        );
         test!("-1", -1.0);
         test!("0.1", 0.1);
         test!("1.2e3", 1.2e3);
