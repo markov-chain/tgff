@@ -5,7 +5,7 @@
 #![feature(macro_rules)]
 
 use std::iter::Peekable;
-use std::str::CharOffsets;
+use std::str::CharIndices;
 
 pub use content::Content;
 pub use content::{Graph, Task, Arc, Deadline};
@@ -28,7 +28,7 @@ pub struct Error {
 
 struct Parser<'a> {
     line: uint,
-    cursor: Peekable<(uint, char), CharOffsets<'a>>,
+    cursor: Peekable<(uint, char), CharIndices<'a>>,
     content: Content,
 }
 
@@ -310,7 +310,7 @@ impl<'a> Parser<'a> {
                 _ => false,
             }
         }) {
-            Some(ref number) => from_str(number.as_slice()),
+            Some(ref number) => number.as_slice().parse(),
             None => None,
         };
         self.skip_void();
