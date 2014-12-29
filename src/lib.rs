@@ -1,6 +1,6 @@
 //! A parser for the [TGFF][1] (Task Graphs For Free) format.
 //!
-//! [1]: http://www.netlib.org/lapack/explore-html/d7/d2b/dgemm_8f.html
+//! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
 #![feature(macro_rules)]
 
