@@ -2,7 +2,7 @@
 //!
 //! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
-#![feature(macro_rules)]
+#![feature(associated_types, macro_rules)]
 
 use std::iter::Peekable;
 use std::str::CharIndices;
@@ -346,7 +346,9 @@ impl<'a> Parser<'a> {
     }
 }
 
-impl<'a> std::iter::Iterator<char> for Parser<'a> {
+impl<'a> std::iter::Iterator for Parser<'a> {
+    type Item = char;
+
     fn next(&mut self) -> Option<char> {
         match self.cursor.next() {
             Some((_, '\n')) => {
