@@ -197,7 +197,9 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn skip(&mut self, accept: |uint, char| -> bool) -> uint {
+    fn skip<F>(&mut self, accept: F) -> uint
+        where F: Fn(uint, char) -> bool {
+
         let mut count = 0;
 
         loop {
@@ -249,7 +251,9 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
-    fn read(&mut self, accept: |uint, char| -> bool) -> Option<String> {
+    fn read<F>(&mut self, accept: F) -> Option<String>
+        where F: Fn(uint, char) -> bool {
+
         let mut result = std::string::String::with_capacity(READ_CAPACITY);
         let mut count = 0;
 
