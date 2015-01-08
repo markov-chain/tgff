@@ -2,8 +2,6 @@
 //!
 //! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
-#![feature(associated_types, macro_rules)]
-
 use std::iter::Peekable;
 use std::str::CharIndices;
 

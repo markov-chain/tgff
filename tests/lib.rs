@@ -1,6 +1,7 @@
-#![feature(phase)]
+#[cfg(test)]
+#[macro_use]
+extern crate assert;
 
-#[phase(plugin)] extern crate assert;
 extern crate test;
 
 extern crate tgff;
