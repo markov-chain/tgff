@@ -2,6 +2,12 @@
 //!
 //! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
+#![allow(unstable)]
+
+#[cfg(test)]
+#[macro_use]
+extern crate assert;
+
 use std::iter::Peekable;
 use std::str::CharIndices;
 
@@ -11,7 +17,7 @@ pub use content::{Table, Column};
 
 mod content;
 
-static READ_CAPACITY: uint = 20;
+static READ_CAPACITY: usize = 20;
 
 /// An outcome of parsing.
 pub type Result<T> = std::result::Result<T, Error>;
@@ -19,14 +25,14 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// A parsing error.
 pub struct Error {
     /// The line on which the error occurred.
-    pub line: uint,
+    pub line: usize,
     /// The description of the error.
     pub message: String,
 }
 
 struct Parser<'a> {
-    line: uint,
-    cursor: Peekable<(uint, char), CharIndices<'a>>,
+    line: usize,
+    cursor: Peekable<(usize, char), CharIndices<'a>>,
     content: Content,
 }
 
@@ -93,7 +99,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn process_block(&mut self, name: String, id: uint) -> Result<()> {
+    fn process_block(&mut self, name: String, id: usize) -> Result<()> {
         try!(self.skip_char('{'));
         if let Some('#') = self.peek() {
             try!(self.process_table(name, id));
@@ -104,7 +110,7 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
-    fn process_graph(&mut self, name: String, id: uint) -> Result<()> {
+    fn process_graph(&mut self, name: String, id: usize) -> Result<()> {
         let mut graph = content::new_graph(name, id);
 
         loop {
@@ -147,7 +153,7 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
-    fn process_table(&mut self, name: String, id: uint) -> Result<()> {
+    fn process_table(&mut self, name: String, id: usize) -> Result<()> {
         let mut table = content::new_table(name, id);
 
         try!(self.skip_char('#'));
@@ -178,7 +184,7 @@ impl<'a> Parser<'a> {
                 Some('}') | None => break,
                 _ => {},
             }
-            for i in range(0u, cols) {
+            for i in range(0, cols) {
                 table.columns[i].data.push(try!(self.get_real()));
             }
         }
@@ -195,8 +201,8 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn skip<F>(&mut self, accept: F) -> uint
-        where F: Fn(uint, char) -> bool {
+    fn skip<F>(&mut self, accept: F) -> usize
+        where F: Fn(usize, char) -> bool {
 
         let mut count = 0;
 
@@ -250,7 +256,7 @@ impl<'a> Parser<'a> {
     }
 
     fn read<F>(&mut self, accept: F) -> Option<String>
-        where F: Fn(uint, char) -> bool {
+        where F: Fn(usize, char) -> bool {
 
         let mut result = std::string::String::with_capacity(READ_CAPACITY);
         let mut count = 0;
@@ -286,7 +292,7 @@ impl<'a> Parser<'a> {
         result
     }
 
-    fn read_id(&mut self) -> Option<uint> {
+    fn read_id(&mut self) -> Option<usize> {
         match self.read_token() {
             Some(ref token) => match token.as_slice().split('_').nth(1) {
                 Some(id) => std::num::from_str_radix(id, 10),
@@ -296,7 +302,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn read_natural(&mut self) -> Option<uint> {
+    fn read_natural(&mut self) -> Option<usize> {
         let result = match self.read(|_, c| c >= '0' && c <= '9') {
             Some(ref number) => std::num::from_str_radix(number.as_slice(), 10),
             None => None,
@@ -326,14 +332,14 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn get_id(&mut self) -> Result<uint> {
+    fn get_id(&mut self) -> Result<usize> {
         match self.read_id() {
             Some(id) => Ok(id),
             None => raise!(self, "expected an id"),
         }
     }
 
-    fn get_natural(&mut self) -> Result<uint> {
+    fn get_natural(&mut self) -> Result<usize> {
         match self.read_natural() {
             Some(number) => Ok(number),
             None => raise!(self, "expected a natural number"),
@@ -365,22 +371,6 @@ impl<'a> std::iter::Iterator for Parser<'a> {
 
 #[cfg(test)]
 mod tests {
-    macro_rules! assert_ok(
-        ($result: expr) => (
-            if let Err(err) = $result {
-                assert!(false, "{}", err);
-            }
-        );
-    );
-
-    macro_rules! assert_error(
-        ($result: expr) => (
-            if let Ok(_) = $result {
-                assert!(false, "expected an error");
-            }
-        );
-    );
-
     macro_rules! parser(
         ($input:expr) => (super::Parser::new($input));
     );
@@ -388,8 +378,8 @@ mod tests {
     #[test]
     fn process_at() {
         assert_ok!(parser!("@abc 12").process_at());
-        assert_error!(parser!("@ ").process_at());
-        assert_error!(parser!("@abc").process_at());
+        assert_err!(parser!("@ ").process_at());
+        assert_err!(parser!("@abc").process_at());
     }
 
     #[test]

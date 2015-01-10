@@ -5,7 +5,7 @@ use std::collections::HashMap;
 /// The content of a TGFF file.
 pub struct Content {
     /// Global attributes such as `HYPERPERIOD`.
-    pub attributes: HashMap<String, uint>,
+    pub attributes: HashMap<String, usize>,
     /// Task graphs.
     pub graphs: Vec<Graph>,
     /// Data tables.
@@ -17,9 +17,9 @@ pub struct Graph {
     /// The name of the graph.
     pub name: String,
     /// The ID of the graph.
-    pub id: uint,
+    pub id: usize,
     /// Graph attributes such as `PERIOD`.
-    pub attributes: HashMap<String, uint>,
+    pub attributes: HashMap<String, usize>,
     /// Vertices representing tasks.
     pub tasks: Vec<Task>,
     /// Edges representing dependencies between the tasks.
@@ -31,31 +31,31 @@ pub struct Graph {
 /// A node in a graph representing a task.
 pub struct Task {
     /// The ID of the task.
-    pub id: uint,
+    pub id: usize,
     /// The type of the task.
-    pub kind: uint,
+    pub kind: usize,
 }
 
 /// An edge in a graph connecting two tasks.
 pub struct Arc {
     /// The ID of the arc.
-    pub id: uint,
+    pub id: usize,
     /// The ID of the source task.
-    pub from: uint,
+    pub from: usize,
     /// The ID of the destination task.
-    pub to: uint,
+    pub to: usize,
     /// The type of the arc.
-    pub kind: uint,
+    pub kind: usize,
 }
 
 /// The deadline of a task.
 pub struct Deadline {
     /// The ID of the deadline.
-    pub id: uint,
+    pub id: usize,
     /// The ID of the task.
-    pub on: uint,
+    pub on: usize,
     /// The time associated with the deadline.
-    pub at: uint,
+    pub at: usize,
 }
 
 /// A data table.
@@ -63,7 +63,7 @@ pub struct Table {
     /// The name of the table.
     pub name: String,
     /// The ID of the table.
-    pub id: uint,
+    pub id: usize,
     /// Table attributes.
     pub attributes: HashMap<String, f64>,
     /// The columns of the table.
@@ -88,7 +88,7 @@ pub fn new() -> Content {
 }
 
 #[inline]
-pub fn new_graph(name: String, id: uint) -> Graph {
+pub fn new_graph(name: String, id: usize) -> Graph {
     Graph {
         name: name,
         id: id,
@@ -100,22 +100,22 @@ pub fn new_graph(name: String, id: uint) -> Graph {
 }
 
 #[inline]
-pub fn new_task(id: uint, kind: uint) -> Task {
+pub fn new_task(id: usize, kind: usize) -> Task {
     Task { id: id, kind: kind }
 }
 
 #[inline]
-pub fn new_arc(id: uint, from: uint, to: uint, kind: uint) -> Arc {
+pub fn new_arc(id: usize, from: usize, to: usize, kind: usize) -> Arc {
     Arc { id: id, from: from, to: to, kind: kind }
 }
 
 #[inline]
-pub fn new_deadline(id: uint, on: uint, at: uint) -> Deadline {
+pub fn new_deadline(id: usize, on: usize, at: usize) -> Deadline {
     Deadline { id: id, on: on, at: at }
 }
 
 #[inline]
-pub fn new_table(name: String, id: uint) -> Table {
+pub fn new_table(name: String, id: usize) -> Table {
     Table {
         name: name,
         id: id,
