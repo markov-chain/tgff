@@ -201,9 +201,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn skip<F>(&mut self, accept: F) -> usize
-        where F: Fn(usize, char) -> bool {
-
+    fn skip(&mut self, accept: &Fn(usize, char) -> bool) -> usize {
         let mut count = 0;
 
         loop {
@@ -235,7 +233,7 @@ impl<'a> Parser<'a> {
 
     fn skip_str(&mut self, expected: &str) -> Result<()> {
         let len = expected.len();
-        if self.skip(|i, c| i < len && c == expected.char_at(i)) != len {
+        if self.skip(&|i, c| i < len && c == expected.char_at(i)) != len {
             raise!(self, "expected `{}`", expected);
         }
         self.skip_void();
@@ -244,20 +242,18 @@ impl<'a> Parser<'a> {
 
     #[inline]
     fn skip_void(&mut self) {
-        self.skip(|_, c| c == ' ' || c == '\t' || c == '\n');
+        self.skip(&|_, c| c == ' ' || c == '\t' || c == '\n');
     }
 
     fn skip_comment(&mut self) -> Result<()> {
-        if self.skip(|i, c| i == 0 && c == '#' || (i > 0) && c == '-') < 2 {
+        if self.skip(&|i, c| i == 0 && c == '#' || (i > 0) && c == '-') < 2 {
             raise!(self, "expected a comment line");
         }
         self.skip_void();
         Ok(())
     }
 
-    fn read<F>(&mut self, accept: F) -> Option<String>
-        where F: Fn(usize, char) -> bool {
-
+    fn read(&mut self, accept: &Fn(usize, char) -> bool) -> Option<String> {
         let mut result = std::string::String::with_capacity(READ_CAPACITY);
         let mut count = 0;
 
@@ -281,7 +277,7 @@ impl<'a> Parser<'a> {
     }
 
     fn read_token(&mut self) -> Option<String> {
-        let result = self.read(|i, c| {
+        let result = self.read(&|i, c| {
             match c {
                 'A'...'Z' | 'a'...'z' if i == 0 => true,
                 'A'...'Z' | 'a'...'z' | '_' | '0'...'9' if i > 0 => true,
@@ -303,7 +299,7 @@ impl<'a> Parser<'a> {
     }
 
     fn read_natural(&mut self) -> Option<usize> {
-        let result = match self.read(|_, c| c >= '0' && c <= '9') {
+        let result = match self.read(&|_, c| c >= '0' && c <= '9') {
             Some(ref number) => std::num::from_str_radix(number.as_slice(), 10),
             None => None,
         };
@@ -312,7 +308,7 @@ impl<'a> Parser<'a> {
     }
 
     fn read_real(&mut self) -> Option<f64> {
-        let result = match self.read(|_, c| {
+        let result = match self.read(&|_, c| {
             match c {
                 '+' | '-' | '.' | '0'...'9' | 'e' | 'E' => true,
                 _ => false,
