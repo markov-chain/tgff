@@ -59,7 +59,7 @@ macro_rules! some(
     );
 );
 
-impl std::fmt::Show for Error {
+impl std::fmt::Display for Error {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(formatter, "{} on line {}", self.message, self.line)
     }

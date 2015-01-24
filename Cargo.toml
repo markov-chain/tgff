@@ -1,6 +1,6 @@
 [package]
 name = "tgff"
-version = "0.0.9"
+version = "0.1.0"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/stainless-steel/tgff"
@@ -9,4 +9,4 @@ documentation = "https://stainless-steel.github.io/tgff"
 description = "The library provides a parser for the TGFF (Task Graphs For Free) format."
 
 [dev-dependencies]
-assert = "0.0.4"
+assert = "0.1"
