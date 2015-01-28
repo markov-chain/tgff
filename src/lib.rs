@@ -67,6 +67,7 @@ impl fmt::Debug for Error {
 }
 
 impl fmt::Display for Error {
+    #[inline]
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         fmt::Debug::fmt(self, formatter)
     }
