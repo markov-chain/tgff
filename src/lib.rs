@@ -8,6 +8,7 @@
 #[macro_use]
 extern crate assert;
 
+use std::fmt;
 use std::iter::Peekable;
 use std::str::CharIndices;
 
@@ -59,15 +60,15 @@ macro_rules! some(
     );
 );
 
-impl std::fmt::Debug for Error {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl fmt::Debug for Error {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "{} on line {}", self.message, self.line)
     }
 }
 
-impl std::fmt::Display for Error {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(formatter, "{} on line {}", self.message, self.line)
+impl fmt::Display for Error {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(self, formatter)
     }
 }
 
