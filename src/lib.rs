@@ -2,7 +2,7 @@
 //!
 //! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
-#![allow(unstable)]
+#![feature(collections, core)]
 
 #[cfg(test)]
 #[macro_use]

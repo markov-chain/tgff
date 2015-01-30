@@ -1,4 +1,4 @@
-#![allow(unstable)]
+#![feature(collections, core, io, path, test)]
 
 #[cfg(test)]
 #[macro_use]
@@ -73,8 +73,10 @@ fn parse_032_640() {
 }
 
 fn read_fixture(name: &str) -> String {
-    use std::io::fs::PathExtensions;
+    use std::old_io::File;
+    use std::old_io::fs::PathExtensions;
+
     let path = Path::new("tests").join_many(&["fixtures", name]);
     assert!(path.exists());
-    std::io::File::open(&path).read_to_string().unwrap()
+    File::open(&path).read_to_string().unwrap()
 }
