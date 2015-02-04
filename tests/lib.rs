@@ -1,4 +1,4 @@
-#![feature(collections, core, io, path, test)]
+#![feature(core, io, path, test)]
 
 #[cfg(test)]
 #[macro_use]
@@ -10,7 +10,7 @@ extern crate tgff;
 
 #[test]
 fn parse_002_040() {
-    let result = tgff::parse(read_fixture("002_040.tgff").as_slice()).unwrap();
+    let result = tgff::parse(&read_fixture("002_040.tgff")[]).unwrap();
 
     assert_eq!(result.attributes["HYPERPERIOD".to_string()], 8);
     assert_eq!(result.graphs.len(), 1);
@@ -52,7 +52,7 @@ fn parse_002_040() {
 
 #[test]
 fn parse_032_640() {
-    let result = tgff::parse(read_fixture("032_640.tgff").as_slice()).unwrap();
+    let result = tgff::parse(&read_fixture("032_640.tgff")[]).unwrap();
 
     assert_eq!(result.attributes["HYPERPERIOD".to_string()], 18);
     assert_eq!(result.graphs.len(), 1);

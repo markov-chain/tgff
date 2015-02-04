@@ -55,7 +55,7 @@ macro_rules! some(
     ($parser:expr, $result:expr, $($arg:tt)*) => (
         match $result {
             Some(result) => result,
-            None => raise!($parser, $($arg)*),
+            _ => raise!($parser, $($arg)*),
         }
     );
 );
@@ -87,7 +87,7 @@ impl<'a> Parser<'a> {
             match self.peek() {
                 Some('@') => try!(self.process_at()),
                 Some(_) => raise!(self, "found an unknown statement"),
-                None => break,
+                _ => break,
             }
         }
         Ok(std::mem::replace(&mut self.content, content::new()))
@@ -123,7 +123,7 @@ impl<'a> Parser<'a> {
 
         loop {
             match self.read_token() {
-                Some(ref token) => match token.as_slice() {
+                Some(ref token) => match &token[] {
                     "TASK" => {
                         let id = try!(self.get_id());
                         try!(self.skip_str("TYPE"));
@@ -153,7 +153,7 @@ impl<'a> Parser<'a> {
                         graph.attributes.insert(token.clone(), value);
                     },
                 },
-                None => break,
+                _ => break,
             }
         }
 
@@ -170,7 +170,7 @@ impl<'a> Parser<'a> {
         loop {
             match self.read_token() {
                 Some(token) => names.push(token),
-                None => break,
+                _ => break,
             }
         }
         for name in names.into_iter() {
@@ -183,7 +183,7 @@ impl<'a> Parser<'a> {
         loop {
             match self.read_token() {
                 Some(name) => table.columns.push(content::new_column(name)),
-                None => break,
+                _ => break,
             }
         }
         let cols = table.columns.len();
@@ -205,7 +205,7 @@ impl<'a> Parser<'a> {
     fn peek(&mut self) -> Option<char> {
         match self.cursor.peek() {
             Some(&(_, c)) => Some(c),
-            None => None,
+            _ => None,
         }
     }
 
@@ -219,7 +219,7 @@ impl<'a> Parser<'a> {
                     self.next();
                     count += 1;
                 },
-                None => break,
+                _ => break,
             }
         }
 
@@ -234,7 +234,7 @@ impl<'a> Parser<'a> {
                     return Ok(());
                 }
             },
-            None => {},
+            _ => {},
         }
         raise!(self, "expected `{}`", expected);
     }
@@ -273,7 +273,7 @@ impl<'a> Parser<'a> {
                     self.next();
                     count += 1;
                 },
-                None => break,
+                _ => break,
             }
         }
 
@@ -297,19 +297,27 @@ impl<'a> Parser<'a> {
     }
 
     fn read_id(&mut self) -> Option<usize> {
+        use std::num::from_str_radix;
         match self.read_token() {
             Some(ref token) => match token.as_slice().split('_').nth(1) {
-                Some(id) => std::num::from_str_radix(id, 10),
-                None => None,
+                Some(id) => match from_str_radix(id, 10) {
+                    Ok(id) => Some(id),
+                    _ => None,
+                },
+                _ => None,
             },
-            None => None,
+            _ => None,
         }
     }
 
     fn read_natural(&mut self) -> Option<usize> {
+        use std::num::from_str_radix;
         let result = match self.read(&|_, c| c >= '0' && c <= '9') {
-            Some(ref number) => std::num::from_str_radix(number.as_slice(), 10),
-            None => None,
+            Some(ref number) => match from_str_radix(&number[], 10) {
+                Ok(number) => Some(number),
+                _ => None,
+            },
+            _ => None,
         };
         self.skip_void();
         result
@@ -322,8 +330,11 @@ impl<'a> Parser<'a> {
                 _ => false,
             }
         }) {
-            Some(ref number) => number.as_slice().parse(),
-            None => None,
+            Some(ref number) => match number.as_slice().parse() {
+                Ok(number) => Some(number),
+                _ => None,
+            },
+            _ => None,
         };
         self.skip_void();
         result
@@ -332,28 +343,28 @@ impl<'a> Parser<'a> {
     fn get_token(&mut self) -> Result<String> {
         match self.read_token() {
             Some(token) => Ok(token),
-            None => raise!(self, "expected a token"),
+            _ => raise!(self, "expected a token"),
         }
     }
 
     fn get_id(&mut self) -> Result<usize> {
         match self.read_id() {
             Some(id) => Ok(id),
-            None => raise!(self, "expected an id"),
+            _ => raise!(self, "expected an id"),
         }
     }
 
     fn get_natural(&mut self) -> Result<usize> {
         match self.read_natural() {
             Some(number) => Ok(number),
-            None => raise!(self, "expected a natural number"),
+            _ => raise!(self, "expected a natural number"),
         }
     }
 
     fn get_real(&mut self) -> Result<f64> {
         match self.read_real() {
             Some(number) => Ok(number),
-            None => raise!(self, "expected a real number"),
+            _ => raise!(self, "expected a real number"),
         }
     }
 }
@@ -368,7 +379,7 @@ impl<'a> std::iter::Iterator for Parser<'a> {
                 Some('\n')
             },
             Some((_, c)) => Some(c),
-            None => None,
+            _ => None,
         }
     }
 }
