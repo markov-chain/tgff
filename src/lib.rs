@@ -33,7 +33,7 @@ pub struct Error {
 
 struct Parser<'a> {
     line: usize,
-    cursor: Peekable<(usize, char), CharIndices<'a>>,
+    cursor: Peekable<CharIndices<'a>>,
     content: Content,
 }
 
