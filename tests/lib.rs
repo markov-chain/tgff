@@ -1,4 +1,4 @@
-#![feature(core, io, path, test)]
+#![feature(core, fs, io, path, test)]
 
 #[cfg(test)]
 #[macro_use]
@@ -10,7 +10,7 @@ extern crate tgff;
 
 #[test]
 fn parse_002_040() {
-    let result = tgff::parse(&read_fixture("002_040.tgff")[]).unwrap();
+    let result = tgff::parse(&read_fixture("002_040.tgff")[..]).unwrap();
 
     assert_eq!(result.attributes["HYPERPERIOD".to_string()], 8);
     assert_eq!(result.graphs.len(), 1);
@@ -52,7 +52,7 @@ fn parse_002_040() {
 
 #[test]
 fn parse_032_640() {
-    let result = tgff::parse(&read_fixture("032_640.tgff")[]).unwrap();
+    let result = tgff::parse(&read_fixture("032_640.tgff")).unwrap();
 
     assert_eq!(result.attributes["HYPERPERIOD".to_string()], 18);
     assert_eq!(result.graphs.len(), 1);
@@ -73,10 +73,16 @@ fn parse_032_640() {
 }
 
 fn read_fixture(name: &str) -> String {
-    use std::old_io::File;
-    use std::old_io::fs::PathExtensions;
+    use std::fs::File;
+    use std::io::Read;
+    use std::path::PathBuf;
 
-    let path = Path::new("tests").join_many(&["fixtures", name]);
-    assert!(path.exists());
-    File::open(&path).read_to_string().unwrap()
+    let mut path = PathBuf::new("tests");
+    path.push("fixtures");
+    path.push(name);
+
+    let mut buffer = String::new();
+    File::open(&path).unwrap().read_to_string(&mut buffer).unwrap();
+
+    buffer
 }
