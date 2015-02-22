@@ -123,7 +123,7 @@ impl<'a> Parser<'a> {
 
         loop {
             match self.read_token() {
-                Some(ref token) => match &token[..] {
+                Some(token) => match &*token {
                     "TASK" => {
                         let id = try!(self.get_id());
                         try!(self.skip_str("TYPE"));
@@ -299,7 +299,7 @@ impl<'a> Parser<'a> {
     fn read_id(&mut self) -> Option<usize> {
         use std::num::from_str_radix;
         match self.read_token() {
-            Some(ref token) => match (&token).split('_').nth(1) {
+            Some(token) => match token.split('_').nth(1) {
                 Some(id) => match from_str_radix(id, 10) {
                     Ok(id) => Some(id),
                     _ => None,
@@ -313,7 +313,7 @@ impl<'a> Parser<'a> {
     fn read_natural(&mut self) -> Option<usize> {
         use std::num::from_str_radix;
         let result = match self.read(&|_, c| c >= '0' && c <= '9') {
-            Some(ref number) => match from_str_radix(&number, 10) {
+            Some(number) => match from_str_radix(&number, 10) {
                 Ok(number) => Some(number),
                 _ => None,
             },
@@ -330,7 +330,7 @@ impl<'a> Parser<'a> {
                 _ => false,
             }
         }) {
-            Some(ref number) => match (&number).parse() {
+            Some(number) => match number.parse() {
                 Ok(number) => Some(number),
                 _ => None,
             },

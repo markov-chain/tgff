@@ -10,7 +10,7 @@ extern crate tgff;
 
 #[test]
 fn parse_002_040() {
-    let result = tgff::parse(&read_fixture("002_040.tgff")[..]).unwrap();
+    let result = tgff::parse(&read_fixture("002_040.tgff")).unwrap();
 
     assert_eq!(result.attributes["HYPERPERIOD".to_string()], 8);
     assert_eq!(result.graphs.len(), 1);
@@ -77,9 +77,7 @@ fn read_fixture(name: &str) -> String {
     use std::io::Read;
     use std::path::PathBuf;
 
-    let mut path = PathBuf::new("tests");
-    path.push("fixtures");
-    path.push(name);
+    let path = PathBuf::new("tests").join("fixtures").join(name);
 
     let mut buffer = String::new();
     File::open(&path).unwrap().read_to_string(&mut buffer).unwrap();
