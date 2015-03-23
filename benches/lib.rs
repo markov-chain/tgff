@@ -1,4 +1,4 @@
-#![feature(fs, io, path, test)]
+#![feature(test)]
 
 extern crate test;
 

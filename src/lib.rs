@@ -2,7 +2,7 @@
 //!
 //! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
-#![feature(collections, core)]
+#![feature(core)]
 
 #[cfg(test)]
 #[macro_use]
@@ -192,7 +192,7 @@ impl<'a> Parser<'a> {
                 Some('}') | None => break,
                 _ => {},
             }
-            for i in range(0, cols) {
+            for i in (0..cols) {
                 table.columns[i].data.push(try!(self.get_real()));
             }
         }
@@ -240,8 +240,8 @@ impl<'a> Parser<'a> {
     }
 
     fn skip_str(&mut self, expected: &str) -> Result<()> {
-        let len = expected.len();
-        if self.skip(&|i, c| i < len && c == expected.char_at(i)) != len {
+        let (len, vec) = (expected.len(), expected.chars().collect::<Vec<_>>());
+        if self.skip(&|i, c| i < len && c == vec[i]) != len {
             raise!(self, "expected `{}`", expected);
         }
         self.skip_void();
@@ -476,8 +476,7 @@ mod tests {
     fn get_token() {
         macro_rules! test(
             ($input:expr, $output:expr) => (
-                assert_eq!(parser!($input).get_token().unwrap(),
-                           String::from_str($output))
+                assert_eq!(parser!($input).get_token().unwrap(), $output.to_string())
             );
         );
         test!("AZ xyz", "AZ");

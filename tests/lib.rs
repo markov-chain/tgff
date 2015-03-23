@@ -1,6 +1,5 @@
-#![feature(core, fs, io, path, test)]
+#![feature(std_misc, test)]
 
-#[cfg(test)]
 #[macro_use]
 extern crate assert;
 
@@ -25,7 +24,7 @@ fn parse_002_040() {
     assert_eq!(graph.deadlines.len(), 18);
 
     let prices = vec![10.5042, 14.8562];
-    for i in range(0, 2) {
+    for i in (0..2) {
         let table = &result.tables[i];
         assert_eq!(table.name, "CORE".to_string());
         assert_eq!(table.id, i);
