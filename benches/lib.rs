@@ -1,4 +1,4 @@
-#![feature(test)]
+#![feature(convert, test)]
 
 extern crate test;
 
@@ -27,7 +27,7 @@ fn read_fixture(name: &str) -> String {
     use std::io::Read;
     use std::path::PathBuf;
 
-    let mut path = PathBuf::new("tests");
+    let mut path = PathBuf::from("tests");
     path.push("fixtures");
     path.push(name);
 

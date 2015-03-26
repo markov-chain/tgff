@@ -437,7 +437,7 @@ mod tests {
         let mut parser = parser!("# foo\n 70.07\n#--\n# bar baz\n1 2 3 4 ");
         assert_ok!(parser.process_table(String::new(), 0));
         let ref table = parser.content.tables[0];
-        assert_eq!(table.attributes["foo".to_string()], 70.07);
+        assert_eq!(table.attributes["foo"], 70.07);
         assert_eq!(table.columns[0].name, "bar".to_string());
         assert_eq!(table.columns[1].name, "baz".to_string());
         assert_eq!(table.columns[0].data, vec![1.0, 3.0]);

@@ -1,4 +1,4 @@
-#![feature(std_misc, test)]
+#![feature(convert, std_misc, test)]
 
 #[macro_use]
 extern crate assert;
@@ -11,14 +11,14 @@ extern crate tgff;
 fn parse_002_040() {
     let result = tgff::parse(&read_fixture("002_040.tgff")).unwrap();
 
-    assert_eq!(result.attributes["HYPERPERIOD".to_string()], 8);
+    assert_eq!(result.attributes["HYPERPERIOD"], 8);
     assert_eq!(result.graphs.len(), 1);
     assert_eq!(result.tables.len(), 2);
 
     let graph = &result.graphs[0];
-    assert_eq!(graph.name, "GRAPH".to_string());
+    assert_eq!(graph.name, "GRAPH");
     assert_eq!(graph.id, 0);
-    assert_eq!(graph.attributes["PERIOD".to_string()], 8);
+    assert_eq!(graph.attributes["PERIOD"], 8);
     assert_eq!(graph.tasks.len(), 40);
     assert_eq!(graph.arcs.len(), 52);
     assert_eq!(graph.deadlines.len(), 18);
@@ -26,14 +26,14 @@ fn parse_002_040() {
     let prices = vec![10.5042, 14.8562];
     for i in (0..2) {
         let table = &result.tables[i];
-        assert_eq!(table.name, "CORE".to_string());
+        assert_eq!(table.name, "CORE");
         assert_eq!(table.id, i);
-        assert_eq!(table.attributes["price".to_string()] as f32, prices[i]);
+        assert_eq!(table.attributes["price"] as f32, prices[i]);
         assert_eq!(table.columns.len(), 4);
-        assert_eq!(table.columns[0].name, "type".to_string());
-        assert_eq!(table.columns[1].name, "version".to_string());
-        assert_eq!(table.columns[2].name, "dynamic_power".to_string());
-        assert_eq!(table.columns[3].name, "execution_time".to_string());
+        assert_eq!(table.columns[0].name, "type");
+        assert_eq!(table.columns[1].name, "version");
+        assert_eq!(table.columns[2].name, "dynamic_power");
+        assert_eq!(table.columns[3].name, "execution_time");
     }
 
     let dynamic_power = vec![
@@ -53,7 +53,7 @@ fn parse_002_040() {
 fn parse_032_640() {
     let result = tgff::parse(&read_fixture("032_640.tgff")).unwrap();
 
-    assert_eq!(result.attributes["HYPERPERIOD".to_string()], 18);
+    assert_eq!(result.attributes["HYPERPERIOD"], 18);
     assert_eq!(result.graphs.len(), 1);
     assert_eq!(result.tables.len(), 32);
 
@@ -76,7 +76,7 @@ fn read_fixture(name: &str) -> String {
     use std::io::Read;
     use std::path::PathBuf;
 
-    let path = PathBuf::new("tests").join("fixtures").join(name);
+    let path = PathBuf::from("tests").join("fixtures").join(name);
 
     let mut buffer = String::new();
     File::open(&path).unwrap().read_to_string(&mut buffer).unwrap();
