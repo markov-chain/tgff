@@ -2,11 +2,10 @@
 //!
 //! [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
-#![feature(core)]
-
 #[cfg(test)]
-#[macro_use]
 extern crate assert;
+
+extern crate num;
 
 use std::fmt;
 use std::iter::Peekable;
@@ -297,10 +296,10 @@ impl<'a> Parser<'a> {
     }
 
     fn read_id(&mut self) -> Option<usize> {
-        use std::num::from_str_radix;
+        use num::traits::Num;
         match self.read_token() {
             Some(token) => match token.split('_').nth(1) {
-                Some(id) => match from_str_radix(id, 10) {
+                Some(id) => match Num::from_str_radix(id, 10) {
                     Ok(id) => Some(id),
                     _ => None,
                 },
@@ -311,9 +310,9 @@ impl<'a> Parser<'a> {
     }
 
     fn read_natural(&mut self) -> Option<usize> {
-        use std::num::from_str_radix;
+        use num::traits::Num;
         let result = match self.read(&|_, c| c >= '0' && c <= '9') {
-            Some(number) => match from_str_radix(&number, 10) {
+            Some(number) => match Num::from_str_radix(&number, 10) {
                 Ok(number) => Some(number),
                 _ => None,
             },
@@ -386,26 +385,28 @@ impl<'a> std::iter::Iterator for Parser<'a> {
 
 #[cfg(test)]
 mod tests {
+    use ::assert;
+
     macro_rules! parser(
         ($input:expr) => (super::Parser::new($input));
     );
 
     #[test]
     fn process_at() {
-        assert_ok!(parser!("@abc 12").process_at());
-        assert_err!(parser!("@ ").process_at());
-        assert_err!(parser!("@abc").process_at());
+        assert::success(parser!("@abc 12").process_at());
+        assert::error(parser!("@ ").process_at());
+        assert::error(parser!("@abc").process_at());
     }
 
     #[test]
     fn process_block() {
-        assert_ok!(parser!("{}").process_block(String::new(), 0));
+        assert::success(parser!("{}").process_block(String::new(), 0));
     }
 
     #[test]
     fn process_graph() {
         let mut parser = parser!("TASK t0_0\tTYPE 2   ");
-        assert_ok!(parser.process_graph(String::new(), 0));
+        assert::success(parser.process_graph(String::new(), 0));
         {
             let ref task = parser.content.graphs[0].tasks[0];
             assert_eq!(task.id, 0);
@@ -413,7 +414,7 @@ mod tests {
         }
 
         parser = parser!("ARC a0_42 \tFROM t0_0  TO  t0_1 TYPE 35   ");
-        assert_ok!(parser.process_graph(String::new(), 0));
+        assert::success(parser.process_graph(String::new(), 0));
         {
             let ref arc = parser.content.graphs[0].arcs[0];
             assert_eq!(arc.id, 42);
@@ -423,7 +424,7 @@ mod tests {
         }
 
         parser = parser!("HARD_DEADLINE d0_9 ON t0_12 AT 1000   ");
-        assert_ok!(parser.process_graph(String::new(), 0));
+        assert::success(parser.process_graph(String::new(), 0));
         {
             let ref deadline = parser.content.graphs[0].deadlines[0];
             assert_eq!(deadline.id, 9);
@@ -435,7 +436,7 @@ mod tests {
     #[test]
     fn process_table() {
         let mut parser = parser!("# foo\n 70.07\n#--\n# bar baz\n1 2 3 4 ");
-        assert_ok!(parser.process_table(String::new(), 0));
+        assert::success(parser.process_table(String::new(), 0));
         let ref table = parser.content.tables[0];
         assert_eq!(table.attributes["foo"], 70.07);
         assert_eq!(table.columns[0].name, "bar".to_string());
@@ -447,14 +448,14 @@ mod tests {
     #[test]
     fn skip_char() {
         let mut parser = parser!("#  \t\n  abc");
-        assert_ok!(parser.skip_char('#'));
+        assert::success(parser.skip_char('#'));
         assert_eq!(parser.next().unwrap(), 'a');
     }
 
     #[test]
     fn skip_str() {
         let mut parser = parser!("abc  \t\n  xyz");
-        assert_ok!(parser.skip_str("abc"));
+        assert::success(parser.skip_str("abc"));
         assert_eq!(parser.next().unwrap(), 'x');
     }
 
@@ -468,7 +469,7 @@ mod tests {
     #[test]
     fn skip_comment() {
         let mut parser = parser!("#--------------   \n abc");
-        assert_ok!(parser.skip_comment());
+        assert::success(parser.skip_comment());
         assert_eq!(parser.next().unwrap(), 'a');
     }
 

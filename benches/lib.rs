@@ -1,4 +1,4 @@
-#![feature(convert, test)]
+#![feature(test)]
 
 extern crate test;
 

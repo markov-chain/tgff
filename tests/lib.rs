@@ -1,9 +1,4 @@
-#![feature(convert, std_misc, test)]
-
-#[macro_use]
 extern crate assert;
-
-extern crate test;
 
 extern crate tgff;
 
@@ -40,13 +35,13 @@ fn parse_002_040() {
         14.41, 9.38, 14.19, 15.48, 12.15, 16.57, 16.98, 11.02, 17.6, 5.42,
         13.95, 7.08, 5.66, 18.08, 16.51, 5.86, 9.31, 17.25, 8.48, 7.29,
     ];
-    assert_close!(result.tables[0].columns[2].data, dynamic_power);
+    assert::within(&result.tables[0].columns[2].data, &dynamic_power, 1e-14);
 
     let execution_time = vec![
         0.025, 0.019, 0.025, 0.026, 0.022, 0.027, 0.028, 0.021, 0.028, 0.015,
         0.024, 0.017, 0.015, 0.029, 0.027, 0.015, 0.019, 0.028, 0.018, 0.017,
     ];
-    assert_close!(result.tables[0].columns[3].data, execution_time);
+    assert::within(&result.tables[0].columns[3].data, &execution_time, 1e-14);
 }
 
 #[test]
