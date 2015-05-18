@@ -1,4 +1,5 @@
 language: rust
+sudo: required
 
 after_success:
   - curl https://stainless-steel.github.io/travis/after_success.sh | bash
@@ -8,5 +9,4 @@ env:
     secure: Y9b/s9cq/kiOBFSNF9Hxoj0vCndgSCKAhSDCPByvft3+SmFr9GONhhI0JIx1pLRdgjxNkiQUUUvBvf+r3ei1RjS6LSNdcMFVW87f6D1KG6HY490FtJtl8aQn0z/PdVhpfUVvEHs6PZ1ydhmXB/UpITtaaK9RxoPsQwfnJpF0QjE=
 
 notifications:
-  email:
-    on_success: never
+  email: false
