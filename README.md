@@ -10,12 +10,12 @@ scheduling and allocation research.
 
 1. Fork the project.
 2. Implement your idea.
-3. Create a pull request.
+3. Open a pull request.
 
 [1]: http://ziyang.eecs.umich.edu/~dickrp/tgff/
 
 [version-img]: https://img.shields.io/crates/v/tgff.svg
 [version-url]: https://crates.io/crates/tgff
-[travis-svg]: https://travis-ci.org/simulated-reality/tgff.svg?branch=master
-[travis-url]: https://travis-ci.org/simulated-reality/tgff
+[status-svg]: https://travis-ci.org/simulated-reality/tgff.svg?branch=master
+[status-url]: https://travis-ci.org/simulated-reality/tgff
 [docs]: https://simulated-reality.github.io/tgff
