@@ -16,6 +16,6 @@ scheduling and allocation research.
 
 [version-img]: https://img.shields.io/crates/v/tgff.svg
 [version-url]: https://crates.io/crates/tgff
-[status-svg]: https://travis-ci.org/simulated-reality/tgff.svg?branch=master
+[status-img]: https://travis-ci.org/simulated-reality/tgff.svg?branch=master
 [status-url]: https://travis-ci.org/simulated-reality/tgff
 [docs]: https://simulated-reality.github.io/tgff
