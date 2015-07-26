@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Arc","An edge in a graph connecting two tasks."],["Column","A column of a table."],["Content","The content of a TGFF file."],["Deadline","The deadline of a task."],["Graph","A task graph."],["Table","A data table."],["Task","A node in a graph representing a task."]]});
